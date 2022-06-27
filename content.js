@@ -4,14 +4,12 @@ chrome.runtime.onMessage.addListener(receiveMessage)
 
 function receiveMessage(msg, sender, sendResponse){
 
-    serialInfo = getSerialInfo()
-
     switch(msg.type){
         case "paste_model_version":
             pasteModelVersion(msg) 
             break
         case "check_request":
-            checkSerialNumbers(serialInfo)
+            checkSerialNumbers()
             break
     }
 }
@@ -47,7 +45,7 @@ function getSerialInfo(){
                         
                         if(divElement.children[k].nodeName === "LABEL"){
                             if(!serial1Set) { infoObject.serial1 = divElement.children[k].textContent }
-                            else {infoObject.serial2 = divElement.children[k].textContent }
+                            else { infoObject.serial2 = divElement.children[k].textContent }
                             serial1Set = true;
                         }
 
@@ -111,6 +109,33 @@ function pasteModelVersion(msg){
     }
 }
 
-function checkSerialNumbers(serialInfo){
-
+function checkSerialNumbers(){
+    serialInfo = getSerialInfo()
+    console.log(serialInfo)
 }
+
+function findDuplicateSerialNumbers(serialInfo){
+
+    //var duplicates = [{ serial1s: ["SPB2022-074983","SPB2022-074983"], serialNumber: "xd-2345" }]
+
+    var duplicates = []
+
+    for (var i = 0; i < serialInfo.length-1; i++)
+    {
+        duplicateObject = { serial1s: [] }
+
+        for (var j = i + 1; j < serialInfo.length; j++)
+        {
+            if (serialInfo[i].serialNumber === serialInfo[j].serialNumber){
+                duplicateObject.serial1s.push(serialInfo[i].serial1)
+                duplicateObject.serial1s.push(serialInfo[j].serial1)
+                duplicateObject.serialNumber = serialInfo[i].serialNumber
+            }
+        }
+
+        duplicates.push(duplicateObject)
+    }
+
+    return duplicates
+}
+

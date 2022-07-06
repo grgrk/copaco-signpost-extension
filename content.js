@@ -4,6 +4,8 @@ chrome.runtime.onMessage.addListener(receiveMessage)
 
 function receiveMessage(msg, sender, sendResponse){
 
+    console.log("message received:"+ msg)
+
     switch(msg.type){
         case "paste_model_version":
             pasteModelVersion(msg) 
@@ -11,7 +13,24 @@ function receiveMessage(msg, sender, sendResponse){
         case "check_request":
             checkSerialNumbers()
             break
+        case "imaging_helper_setup":
+            setupImagingHelperTab(msg)
+            break    
     }
+
+    sendResponse()
+}
+
+function setupImagingHelperTab(msg){
+    console.log("in setupImagingHelperTab()")
+    
+    chrome.runtime.sendMessage(
+        { 
+            type: "imaging_helper_setup_to_bg", 
+            serialInfo: getSerialInfo(), 
+            imagingHelperTabData: msg.tabData 
+        }
+    );
 }
 
 function getSerialInfo(){
@@ -39,14 +58,14 @@ function getSerialInfo(){
                     checkMarksObject = {}
                     checkMarkCount = 1
 
-                    serial1Set = false;
+                    signpostLabelSet = false;
 
                     for(var k=0; k < divElement.children.length; k++){
                         
                         if(divElement.children[k].nodeName === "LABEL"){
-                            if(!serial1Set) { infoObject.serial1 = divElement.children[k].textContent }
-                            else { infoObject.serial2 = divElement.children[k].textContent }
-                            serial1Set = true;
+                            if(!signpostLabelSet) { infoObject.signpostLabel = divElement.children[k].textContent }
+                            else { infoObject.schoolLabel = divElement.children[k].textContent }
+                            signpostLabelSet = true;
                         }
 
                         if(divElement.children[k].nodeName === "DIV"){
@@ -116,19 +135,19 @@ function checkSerialNumbers(){
 
 function findDuplicateSerialNumbers(serialInfo){
 
-    //var duplicates = [{ serial1s: ["SPB2022-074983","SPB2022-074983"], serialNumber: "xd-2345" }]
+    //var duplicates = [{ signpostLabels: ["SPB2022-074983","SPB2022-074983"], serialNumber: "xd-2345" }]
 
     var duplicates = []
 
     for (var i = 0; i < serialInfo.length-1; i++)
     {
-        duplicateObject = { serial1s: [] }
+        duplicateObject = { signpostLabels: [] }
 
         for (var j = i + 1; j < serialInfo.length; j++)
         {
             if (serialInfo[i].serialNumber === serialInfo[j].serialNumber){
-                duplicateObject.serial1s.push(serialInfo[i].serial1)
-                duplicateObject.serial1s.push(serialInfo[j].serial1)
+                duplicateObject.signpostLabels.push(serialInfo[i].signpostLabel)
+                duplicateObject.signpostLabels.push(serialInfo[j].signpostLabel)
                 duplicateObject.serialNumber = serialInfo[i].serialNumber
             }
         }

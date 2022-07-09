@@ -1,0 +1,16 @@
+#checkmark {
+    display: inline;
+}
+
+#checkmarks {
+    display: inline;
+}
+
+#laptopStatus h2 {
+    display: inline;
+    font-size: 15px;
+}
+
+#laptop-info {
+    display: grid;
+}

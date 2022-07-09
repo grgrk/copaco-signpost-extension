@@ -5,9 +5,10 @@ chrome.runtime.onMessage.addListener(receiveMessage)
 function receiveMessage(msg, sender, sendResponse){
 
     console.log("imaging helper received message!!!!")
+    console.log(msg)
 
     switch(msg.type){
-        case "imaging_helper_setup_to_imaging_helper_tab":
+        case "setup_data":
             console.log(msg)
             setup(msg.serialInfo)
             break

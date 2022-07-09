@@ -13,27 +13,13 @@ function receiveMessage(msg, sender, sendResponse){
         case "check_request":
             checkSerialNumbers()
             break
-        case "imaging_helper_setup":
-            setupImagingHelperTab(msg)
+        case "request_serialInfo":
+            sendResponse(scrapeSerialInfo())
             break    
     }
-
-    sendResponse()
 }
 
-function setupImagingHelperTab(msg){
-    console.log("in setupImagingHelperTab()")
-    
-    chrome.runtime.sendMessage(
-        { 
-            type: "imaging_helper_setup_to_bg", 
-            serialInfo: getSerialInfo(), 
-            imagingHelperTabData: msg.tabData 
-        }
-    );
-}
-
-function getSerialInfo(){
+function scrapeSerialInfo(){
 
     var allElements = document.getElementsByTagName("*")
 

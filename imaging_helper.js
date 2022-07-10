@@ -59,11 +59,12 @@ function setup(startingLaptop){
 function buildCheckmarkDiv(markStatus){
     var imagePath = ""
 
-    if(markStatus){
+    if(markStatus === "check-circle"){
         imagePath = "images/checkmark.svg.png"
-    } else { 
+    } else if(markStatus === "exclamation-triangle"){ 
         imagePath = "images/exclamation_triangle.jpg"
     }
+    //todo wat als de status questionmark is.
 
     return "".concat("<div id='checkmark'><img src='", imagePath,
                      "' width='25' height='25' alt='failed to load image'></div>")

@@ -73,18 +73,12 @@ function scrapeSerialInfo(){
                                 
                                 svgELement = linkElement.children[0]
 
-                                checkMark = false
-
-                                if(svgELement.getAttribute('data-icon') === "check-circle"){
-                                    checkMark = true
-                                }
-
                                 switch(checkMarkCount){
-                                    case 1: checkMarksObject.scriptingData = checkMark; break;
-                                    case 2: checkMarksObject.synergyId = checkMark; break;
-                                    case 3: checkMarksObject.intune = checkMark; break;
-                                    case 4: checkMarksObject.specifications = checkMark; break;
-                                    case 5: checkMarksObject.decommisioned = checkMark; break;        
+                                    case 1: checkMarksObject.scriptingData = svgELement.getAttribute('data-icon'); break;
+                                    case 2: checkMarksObject.synergyId = svgELement.getAttribute('data-icon'); break;
+                                    case 3: checkMarksObject.intune = svgELement.getAttribute('data-icon'); break;
+                                    case 4: checkMarksObject.specifications = svgELement.getAttribute('data-icon'); break;
+                                    case 5: checkMarksObject.decommisioned = svgELement.getAttribute('data-icon'); break;        
                                 }
 
                                 checkMarkCount++;

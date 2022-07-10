@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener(receiveMessage)
 
 var maxColumns = 5
-var maxRows = 10
+var maxRows = 20
 var maxItems = maxColumns * maxRows
 var serialInfo
 

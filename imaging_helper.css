@@ -14,3 +14,12 @@
 #laptop-info {
     display: grid;
 }
+
+h1 {
+    display: inline;
+    margin-right: 25px;
+}
+
+header {
+    margin-bottom: 15px;
+}

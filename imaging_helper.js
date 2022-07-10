@@ -2,24 +2,42 @@ chrome.runtime.onMessage.addListener(receiveMessage)
 
 var maxColumns = 5
 var maxRows = 10
+var maxItems = maxColumns * maxRows
+var serialInfo
 
 function receiveMessage(msg, sender, sendResponse){
 
     switch(msg.type){
         case "setup_data":
-            setup(msg.serialInfo)
-            console.log(msg.serialInfo)
+            serialInfo = msg.serialInfo
+            setup(serialInfo[0].signpostLabel)
             break
     }
 }
 
-function setup(serialInfo){
+document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
+    if(key === "Enter") {
+        inputElement = document.getElementById("startingLaptop")
+        setup(inputElement.value)
+    }
+})
+
+function setup(startingLaptop){
+    laptopInfoDiv = document.getElementById("laptop-info")
+    laptopInfoDiv.style.gridTemplateColumns = "repeat("+maxColumns+", 2fr)"
+    laptopInfoDiv.style.gridTemplateRows = "repeat("+maxRows+", 1fr)"
+
+    laptopInfoDiv.innerHTML = ""
+
+    startingLaptopFound = false
+
     for(var i = 0; i < serialInfo.length; i++){
-        laptopInfoDiv = document.getElementById("laptop-info")
-        laptopInfoDiv.style.gridTemplateColumns = "repeat("+maxColumns+", 2fr)"
-        laptopInfoDiv.style.gridTemplateRows = "repeat("+maxRows+", 1fr)"
-        
-        let divNumber = i + 1;
+
+        if(serialInfo[i].signpostLabel === startingLaptop){ startingLaptopFound = true; var startIndex = i }
+        if(!startingLaptopFound){ continue }
+        if(i > startIndex + maxItems - 1){ break }
+
+        let divNumber = i + 1 - startIndex;
         let column = Math.ceil(divNumber / maxRows)
         let row = divNumber % maxRows
         if(row == 0) { row = maxRows }

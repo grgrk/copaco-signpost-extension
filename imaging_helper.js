@@ -22,6 +22,11 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     }
 })
 
+
+window.onload = () => {
+    if(serialInfo != undefined) setup(serialInfo[0])
+}
+
 function setup(startingLaptop){
     laptopInfoDiv = document.getElementById("laptop-info")
     laptopInfoDiv.style.gridTemplateColumns = "repeat("+maxColumns+", 2fr)"
@@ -66,7 +71,6 @@ function buildCheckmarkDiv(markStatus){
     } else if(markStatus === "error-warning"){
         imagePath = "images/question_mark.png"
     }
-    //todo wat als de status questionmark is.
 
     return "".concat("<div id='checkmark'><img src='", imagePath,
                      "' width='25' height='25' alt='failed to load image'></div>")

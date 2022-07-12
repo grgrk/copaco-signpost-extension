@@ -17,7 +17,7 @@ function receiveMessage(msg, sender, sendResponse){
             sendResponse(scrapeSerialInfo())
             break  
         case "start_reloading":
-            timedRefresh(3000)
+            timedRefresh(10000)
             break
     }
 }

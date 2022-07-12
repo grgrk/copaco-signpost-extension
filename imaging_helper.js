@@ -63,6 +63,8 @@ function buildCheckmarkDiv(markStatus){
         imagePath = "images/checkmark.svg.png"
     } else if(markStatus === "exclamation-triangle"){ 
         imagePath = "images/exclamation_triangle.jpg"
+    } else if(markStatus === "error-warning"){
+        imagePath = "images/question_mark.png"
     }
     //todo wat als de status questionmark is.
 

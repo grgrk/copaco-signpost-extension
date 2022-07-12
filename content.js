@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener(receiveMessage)
 
 function receiveMessage(msg, sender, sendResponse){
 
-    console.log("message received:"+ msg)
+    console.log(msg)
 
     switch(msg.type){
         case "paste_model_version":
@@ -15,7 +15,10 @@ function receiveMessage(msg, sender, sendResponse){
             break
         case "request_serialInfo":
             sendResponse(scrapeSerialInfo())
-            break    
+            break  
+        case "start_reloading":
+            timedRefresh(3000)
+            break
     }
 }
 
@@ -96,7 +99,6 @@ function scrapeSerialInfo(){
     return infoList
 }
 
-
 function pasteModelVersion(msg){
     var allElements = document.getElementsByTagName("*")
 
@@ -106,6 +108,10 @@ function pasteModelVersion(msg){
             allElements[i].value = msg.txt
         }
     }
+}
+
+function timedRefresh(millis){
+    setTimeout("location.reload(true)", millis)
 }
 
 function checkSerialNumbers(){

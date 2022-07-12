@@ -2,11 +2,12 @@ console.log("background script hello")
 
 var pairs = []
 
+var sourceReloaders = []
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     switch(msg.type){
         case "register_pair":
-            pairs.push(msg.pair)
-            console.log(pairs)
+            onRegisterPairMsg(msg)
             break
     }
 })
@@ -16,25 +17,60 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
 
     if(tabInPairAndIsHelper(tabId)){
         helperTabId = tabId
-        console.log("helperTabId: " + helperTabId)
 
         sourceTabId = getHelperCounterpartInPair(helperTabId)
-        console.log("sourceTabId: " + sourceTabId)
 
         sendSerialInfoFromSourceToHelper(sourceTabId, helperTabId)
+
+        let sourceReloader = getSourceReloader(sourceTabId)
+
+        if(!sourceReloader.active){
+            sourceReloader.active = true
+            chrome.tabs.sendMessage(sourceTabId, { type: "start_reloading" })
+        }
     } else if(tabInPairAndIsSource(tabId)){
         relevantPairs = findAllPairsBySourceTab(tabId)
-        console.log("relevantPairs: " + relevantPairs)
 
         relevantPairs.forEach(element => { 
             sendSerialInfoFromSourceToHelper(element.sourceTab, element.helperTab) 
         })
+
+        let sourceReloader = getSourceReloader(tabId)
+        if(sourceReloader.active){
+             chrome.tabs.sendMessage(sourceTabId, { type: "start_reloading" }) 
+        }
     } else {
         if(tabNotInPairAndIsHelper(tabId)){
             chrome.tabs.reload(tabId)
         }
     }
 })
+
+function onRegisterPairMsg(msg){
+    pairs.push(msg.pair)
+
+    if(!reloaderExists(msg.pair.sourceTab)){
+        sourceReloaders.push({ sourceTabId: msg.pair.sourceTab, active: false })
+    }
+
+    console.log(sourceReloaders)
+}
+
+function reloaderExists(sourceTabId){
+    sourceReloaders.forEach(element => {
+        if(element.sourceTabId == sourceTabId){ return true }
+    })
+
+    return false
+}
+
+function getSourceReloader(sourceTabId){
+    for(var i = 0; i < sourceReloaders.length; i++){
+        if(sourceReloaders[i].sourceTabId == sourceTabId){ 
+            return sourceReloaders[i] 
+        }
+    }
+}
 
 function sendSerialInfoFromSourceToHelper(sourceTabId, helperTabId){
     chrome.tabs.sendMessage(sourceTabId, { type: "request_serialInfo" }, (response) => {

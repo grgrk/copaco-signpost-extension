@@ -21,19 +21,39 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
         sourceTabId = getHelperCounterpartInPair(helperTabId)
         console.log("sourceTabId: " + sourceTabId)
 
-        chrome.tabs.sendMessage(sourceTabId, { type: "request_serialInfo" }, (response) => {
-            console.log("serialInfo: " + response)
-            chrome.tabs.sendMessage(helperTabId, { type: "setup_data", serialInfo: response })
-        })
+        sendSerialInfoFromSourceToHelper(sourceTabId, helperTabId)
     } else if(tabInPairAndIsSource(tabId)){
-        // todo: find all pairs with source tab id.
-            // send serialinfo to all of them.
+        relevantPairs = findAllPairsBySourceTab(tabId)
+        console.log("relevantPairs: " + relevantPairs)
+
+        relevantPairs.forEach(element => { 
+            sendSerialInfoFromSourceToHelper(element.sourceTab, element.helperTab) 
+        })
     } else {
         if(tabNotInPairAndIsHelper(tabId)){
             chrome.tabs.reload(tabId)
         }
     }
 })
+
+function sendSerialInfoFromSourceToHelper(sourceTabId, helperTabId){
+    chrome.tabs.sendMessage(sourceTabId, { type: "request_serialInfo" }, (response) => {
+        console.log("serialInfo: " + response)
+        chrome.tabs.sendMessage(helperTabId, { type: "setup_data", serialInfo: response })
+    })
+}
+
+function findAllPairsBySourceTab(sourceTabId){
+    foundPairs = []
+
+    for(var i = 0; i < pairs.length; i++){
+        if(pairs[i].sourceTab == sourceTabId){
+            foundPairs.push(pairs[i])
+        }
+    }
+
+    return foundPairs
+}
 
 function tabNotInPairAndIsHelper(unknownTabId){
     chrome.tabs.query({ title: "Copaco Imaging Helper" }, (tabs) => {

@@ -7,6 +7,8 @@ var serialInfo
 
 function receiveMessage(msg, sender, sendResponse){
 
+    console.log("IMG HELPER MESSAGE RECEIVED!!!!!!")
+
     switch(msg.type){
         case "setup_data":
             serialInfo = msg.serialInfo

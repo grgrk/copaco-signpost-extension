@@ -50,7 +50,8 @@ function setup(startingLaptop){
         if(row == 0) { row = maxRows }
 
         laptopInfoDiv.innerHTML += "".concat(
-            "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'><h2>",serialInfo[i].signpostLabel,"</h2>", 
+            "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
+                "<h2 style='color:",serialInfo[i].labelColor,"'>",serialInfo[i].signpostLabel,"</h2>", 
                 "<div id='checkmarks'>",
                     buildCheckmarkDiv(serialInfo[i].checkMarks.scriptingData),
                     buildCheckmarkDiv(serialInfo[i].checkMarks.synergyId),

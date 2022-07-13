@@ -52,7 +52,10 @@ function scrapeSerialInfo(){
                     for(var k=0; k < divElement.children.length; k++){
                         
                         if(divElement.children[k].nodeName === "LABEL"){
-                            if(!signpostLabelSet) { infoObject.signpostLabel = divElement.children[k].textContent }
+                            if(!signpostLabelSet) { 
+                                infoObject.signpostLabel = divElement.children[k].textContent 
+                                infoObject.labelColor = window.getComputedStyle(divElement.children[k]).getPropertyValue("color")
+                            }
                             else { infoObject.schoolLabel = divElement.children[k].textContent }
                             signpostLabelSet = true;
                         }

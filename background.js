@@ -9,6 +9,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         case "register_pair":
             onRegisterPairMsg(msg)
             break
+        case "new_starting_laptop":
+            console.log(sender)
+            onNewStartingLaptop(msg, sender)
+            break    
     }
 })
 
@@ -47,13 +51,21 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
 })
 
 function onRegisterPairMsg(msg){
-    pairs.push(msg.pair)
+    initializedPair = msg.pair
+    initializedPair.startingLaptop = "not_set"
+    pairs.push(initializedPair)
 
     if(!reloaderExists(msg.pair.sourceTab)){
         sourceReloaders.push({ sourceTabId: msg.pair.sourceTab, active: false })
     }
 
     console.log(sourceReloaders)
+}
+
+function onNewStartingLaptop(msg, sender){
+    helperTabId = sender.tab.id
+    regardingPair = getPairByHelperTabID(helperTabId)
+    regardingPair.startingLaptop = msg.startingLaptop
 }
 
 function reloaderExists(sourceTabId){
@@ -75,8 +87,21 @@ function getSourceReloader(sourceTabId){
 function sendSerialInfoFromSourceToHelper(sourceTabId, helperTabId){
     chrome.tabs.sendMessage(sourceTabId, { type: "request_serialInfo" }, (response) => {
         console.log("serialInfo: " + response)
-        chrome.tabs.sendMessage(helperTabId, { type: "setup_data", serialInfo: response })
+
+        regardingPair = getPairByHelperTabID(helperTabId)
+
+        if(regardingPair.startingLaptop === "not_set") {
+            regardingPair.startingLaptop = response[0].signpostLabel
+        }
+                
+        chrome.tabs.sendMessage(helperTabId, { type: "setup_data", serialInfo: response, startingLaptop: regardingPair.startingLaptop })
     })
+}
+
+function getPairByHelperTabID(helperTabId){
+    for(var i = 0; i < pairs.length; i++){
+        if(pairs[i].helperTab == helperTabId){ return pairs[i] }
+    }
 }
 
 function findAllPairsBySourceTab(sourceTabId){

@@ -12,7 +12,7 @@ function receiveMessage(msg, sender, sendResponse){
     switch(msg.type){
         case "setup_data":
             serialInfo = msg.serialInfo
-            setup(serialInfo[0].signpostLabel)
+            setup(msg.startingLaptop)
             break
     }
 }
@@ -20,10 +20,14 @@ function receiveMessage(msg, sender, sendResponse){
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         inputElement = document.getElementById("startingLaptop")
+        notifyBackgroundOfStartingLaptop(inputElement.value)
         setup(inputElement.value)
     }
 })
 
+function notifyBackgroundOfStartingLaptop(startingLaptop){
+    chrome.runtime.sendMessage({ type: "new_starting_laptop", startingLaptop: startingLaptop })
+}
 
 window.onload = () => {
     if(serialInfo != undefined) setup(serialInfo[0])

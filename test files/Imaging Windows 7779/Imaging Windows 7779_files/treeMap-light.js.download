@@ -1,0 +1,57 @@
+$(document).ready(() => {
+    var options = {
+        series: [],
+        legend: {
+            show: false,
+        },
+        chart: {
+            height: 350,
+            type: 'treemap',
+            toolbar: {
+                show: false
+            }
+        },
+        tooltip: {
+            theme: 'dark',
+            style: {
+                fontSize: '16px',
+                fontFamily: undefined
+            }
+        },
+        colors: [
+            '#00ADBD',
+            '#9dfcf8',
+            '#3ce9f9',
+            '#46f3ff'
+        ],
+        plotOptions: {
+            treemap: {
+                distributed: false,
+                enableShades: false
+            }
+        },
+        stroke: {
+            show: true,
+            curve: 'smooth',
+            lineCap: 'butt',
+            width: 2,
+            dashArray: 0,      
+        }
+    };
+    if (typeof itemArray2 !== 'undefined') {
+        itemArray2.forEach(element => {
+            options.series.push(
+                {
+                    data: [
+                        {
+                            x: element.x,
+                            y: element.y
+                        }
+                    ]
+                }
+            )
+        });
+        var chart = new ApexCharts(document.querySelector("#treeMapLocation"), options);
+        chart.render();
+    }
+});

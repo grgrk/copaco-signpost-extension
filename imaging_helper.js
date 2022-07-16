@@ -1,7 +1,7 @@
 var maxColumns = 5
 var maxRows = 20
 var maxItems = maxColumns * maxRows
-var serialInfo
+var laptopsInfo
 
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
@@ -14,7 +14,8 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         inputElement = document.getElementById("orderNumber")
         dom = mockRequestImagingPageDOM(inputElement.value)
-        console.log(dom)
+        laptopsInfo = scrapeLaptopsInfo(dom)
+        setup(laptopsInfo[0].signpostLabel)
     }
 })
 
@@ -26,7 +27,7 @@ function requestImagingPageDOM(orderNumber){
 }
 
 function mockRequestImagingPageDOM(orderNumber){
-    htmlString = httpGet("Imaging Windows.html")
+    htmlString = httpGet("test files/Imaging Windows 7779/Imaging Windows 7779.html")
     dom = new DOMParser().parseFromString(htmlString, "text/html")
     return dom    
 }
@@ -52,9 +53,9 @@ function setup(startingLaptop){
 
     startingLaptopFound = false
 
-    for(var i = 0; i < serialInfo.length; i++){
+    for(var i = 0; i < laptopsInfo.length; i++){
 
-        if(serialInfo[i].signpostLabel === startingLaptop){ startingLaptopFound = true; var startIndex = i }
+        if(laptopsInfo[i].signpostLabel === startingLaptop){ startingLaptopFound = true; var startIndex = i }
         if(!startingLaptopFound){ continue }
         if(i > startIndex + maxItems - 1){ break }
 
@@ -65,13 +66,13 @@ function setup(startingLaptop){
 
         laptopInfoDiv.innerHTML += "".concat(
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
-                "<h2 style='color:",serialInfo[i].labelColor,"'>",serialInfo[i].signpostLabel,"</h2>", 
+                "<h2 style='color:",laptopsInfo[i].labelColor,"'>",laptopsInfo[i].signpostLabel,"</h2>", 
                 "<div id='checkmarks'>",
-                    buildCheckmarkDiv(serialInfo[i].checkMarks.scriptingData),
-                    buildCheckmarkDiv(serialInfo[i].checkMarks.synergyId),
-                    buildCheckmarkDiv(serialInfo[i].checkMarks.intune),
-                    buildCheckmarkDiv(serialInfo[i].checkMarks.specifications),
-                    buildCheckmarkDiv(serialInfo[i].checkMarks.decommisioned),
+                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.scriptingData),
+                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.synergyId),
+                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.intune),
+                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.specifications),
+                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.decommisioned),
                 "</div>",
             "</div>"    
         )

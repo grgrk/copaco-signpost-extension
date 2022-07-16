@@ -26,10 +26,10 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
 
         sendSerialInfoFromSourceToHelper(sourceTabId, helperTabId)
 
-        let sourceReloader = getSourceReloader(sourceTabId)
+        sourceReloader = getSourceReloader(sourceTabId)
 
         if(!sourceReloader.active){
-            sourceReloader.active = true
+            setSourceReloaderActive(sourceTabId, true)
             chrome.tabs.sendMessage(sourceTabId, { type: "start_reloading" })
         }
     } else if(tabInPairAndIsSource(tabId)){
@@ -50,6 +50,25 @@ chrome.tabs.onUpdated.addListener(function (tabId , info) {
     }
 })
 
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+
+    if(tabInPairAndIsHelper(tabId)){
+        console.log("tab closed: " + tabId)
+        helperTabId = tabId
+        regardingPair = getPairByHelperTabID(helperTabId)
+        console.log(sourceReloaders)
+        stopSourceReloaderIfNecessary(regardingPair.sourceTab)
+        console.log(sourceReloaders)
+        console.log(pairs)
+        removePairByHelperId(helperTabId)
+        console.log(pairs)
+    }
+
+    if(tabInPairAndIsSource(tabId)){
+
+    }
+})
+
 function onRegisterPairMsg(msg){
     initializedPair = msg.pair
     initializedPair.startingLaptop = "not_set"
@@ -66,6 +85,37 @@ function onNewStartingLaptop(msg, sender){
     helperTabId = sender.tab.id
     regardingPair = getPairByHelperTabID(helperTabId)
     regardingPair.startingLaptop = msg.startingLaptop
+}
+
+function stopSourceReloaderIfNecessary(sourceTabId){
+    if(countNumberOfPairsBySourceTabId(sourceTabId) < 2){
+        sourceReloader = getSourceReloader(sourceTabId)
+        sourceReloader.active = false
+    }   
+}
+
+function setSourceReloaderActive(sourceTabId, isActive){
+    for(var i = 0; i < sourceReloaders.length; i++){
+        if(sourceReloaders[i] == sourceTabId){ 
+            sourceReloaders[i].active = isActive
+        }
+    } 
+}
+
+function removePairByHelperId(helperTabId){
+    for(var i = 0; i < pairs.length; i++){
+        if(pairs[i].helperTab == helperTabId) { pairs.splice(i, 1) }
+    }
+}
+
+function countNumberOfPairsBySourceTabId(sourceTabId){
+    count = 0
+
+    for(var i = 0; i < pairs.length; i++){
+        if(pairs[i].sourceTab == sourceTabId){ count++ }
+    }
+
+    return count
 }
 
 function reloaderExists(sourceTabId){

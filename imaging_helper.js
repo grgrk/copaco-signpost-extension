@@ -1,36 +1,46 @@
-chrome.runtime.onMessage.addListener(receiveMessage)
-
 var maxColumns = 5
 var maxRows = 20
 var maxItems = maxColumns * maxRows
 var serialInfo
 
-function receiveMessage(msg, sender, sendResponse){
-
-    console.log("IMG HELPER MESSAGE RECEIVED!!!!!!")
-
-    switch(msg.type){
-        case "setup_data":
-            serialInfo = msg.serialInfo
-            setup(msg.startingLaptop)
-            break
-    }
-}
-
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         inputElement = document.getElementById("startingLaptop")
-        notifyBackgroundOfStartingLaptop(inputElement.value)
         setup(inputElement.value)
     }
 })
 
-function notifyBackgroundOfStartingLaptop(startingLaptop){
-    chrome.runtime.sendMessage({ type: "new_starting_laptop", startingLaptop: startingLaptop })
+document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
+    if(key === "Enter") {
+        inputElement = document.getElementById("orderNumber")
+        dom = mockRequestImagingPageDOM(inputElement.value)
+        console.log(dom)
+    }
+})
+
+function requestImagingPageDOM(orderNumber){
+    url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
+    htmlString = httpGet(url)
+    dom = new DOMParser().parseFromString(htmlString, "text/html")
+    return dom
+}
+
+function mockRequestImagingPageDOM(orderNumber){
+    htmlString = httpGet("Imaging Windows.html")
+    dom = new DOMParser().parseFromString(htmlString, "text/html")
+    return dom    
+}
+
+function httpGet(url)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", url, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
 }
 
 window.onload = () => {
-    if(serialInfo != undefined) setup(serialInfo[0])
+    console.log("loaded")
 }
 
 function setup(startingLaptop){

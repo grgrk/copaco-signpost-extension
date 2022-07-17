@@ -2,31 +2,37 @@ var maxColumns = 5
 var maxRows = 20
 var maxItems = maxColumns * maxRows
 var laptopsInfo
+var autoUpdate = false
+var autoUpdateInterval
+var orderNumber
+var startingLaptop
 
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
-        inputElement = document.getElementById("startingLaptop")
-        setup(inputElement.value)
+        startingLaptop = document.getElementById("startingLaptop").value
+        setupHTML()
     }
 })
 
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
-        inputElement = document.getElementById("orderNumber")
-        dom = mockRequestImagingPageDOM(inputElement.value)
+        orderNumber = document.getElementById("orderNumber").value
+        dom = mockRequestImagingPageDOM()
         laptopsInfo = scrapeLaptopsInfo(dom)
-        setup(laptopsInfo[0].signpostLabel)
+        startingLaptop = laptopsInfo[0].signpostLabel
+        console.log(laptopsInfo)
+        setupHTML()
     }
 })
 
-function requestImagingPageDOM(orderNumber){
+function requestImagingPageDOM(){
     url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
     htmlString = httpGet(url)
     dom = new DOMParser().parseFromString(htmlString, "text/html")
     return dom
 }
 
-function mockRequestImagingPageDOM(orderNumber){
+function mockRequestImagingPageDOM(){
     htmlString = httpGet("test files/Imaging Windows 7779/Imaging Windows 7779.html")
     dom = new DOMParser().parseFromString(htmlString, "text/html")
     return dom    
@@ -40,11 +46,34 @@ function httpGet(url)
     return xmlHttp.responseText;
 }
 
-window.onload = () => {
-    console.log("loaded")
+document.querySelector('.box').addEventListener('click', (event) => {
+
+    if(autoUpdate){
+        clearInterval(autoUpdateInterval)
+    }
+
+    if(!autoUpdate){
+        autoUpdateInterval = setInterval(() => {
+            laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
+            setupHTML()
+            console.log("update")
+        }, 3000)
+    }
+
+    autoUpdate = !autoUpdate
+    event.target.classList.toggle('pause')
+})
+
+function updateData(){
+    laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
+    setupHTML()
+    console.log("update")
 }
 
-function setup(startingLaptop){
+function setupHTML(){
+
+    console.log("in setup")
+
     laptopInfoDiv = document.getElementById("laptop-info")
     laptopInfoDiv.style.gridTemplateColumns = "repeat("+maxColumns+", 2fr)"
     laptopInfoDiv.style.gridTemplateRows = "repeat("+maxRows+", 1fr)"

@@ -22,8 +22,36 @@ h1 {
 
 header {
     margin-bottom: 15px;
+    
 }
 
+* {
+    /* box-sizing: border-box; */
+    /* border: 1px solid red; */
+}
+
+.box{
+  width: 25px;
+  height: 25px;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 12px 0px 12px 25px;
+  border-color: transparent transparent transparent red;
+  transition: all 100ms ease-in-out;
+}
+
+label {
+    font-size: medium;
+}
+
+.container{
+    display: inline-block;
+}
+
+.pause{
+  border-style: double;
+  border-width:0px 0px 0px 20px;
+}
 
 /* 
 @media only screen and (max-width: 768px){

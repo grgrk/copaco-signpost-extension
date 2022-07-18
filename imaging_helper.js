@@ -37,7 +37,6 @@ document.getElementById("size").addEventListener("keyup", ({key}) => {
 })
 
 document.getElementById("updateIntervalInSecs").addEventListener("input", (event) => {
-    console.log(event.target.value)
     intervalMillis = event.target.value * 1000
 
     if(autoUpdate){

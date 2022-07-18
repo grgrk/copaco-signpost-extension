@@ -6,9 +6,20 @@
     display: inline;
 }
 
+#orderNumber {
+    width: 55px;
+}
+
+#startingLaptop {
+    width: 115px;
+}
+
+#cols, #rows, #size {
+    width: 40px;
+}
+
 #laptopStatus h2 {
     display: inline;
-    font-size: 15px;
 }
 
 #laptop-info {
@@ -22,12 +33,6 @@ h1 {
 
 header {
     margin-bottom: 15px;
-    
-}
-
-* {
-    /* box-sizing: border-box; */
-    /* border: 1px solid red; */
 }
 
 .box{
@@ -52,10 +57,3 @@ label {
   border-style: double;
   border-width:0px 0px 0px 20px;
 }
-
-/* 
-@media only screen and (max-width: 768px){
-    header {
-        background-color: black;
-    }
-} */

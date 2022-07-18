@@ -1,11 +1,38 @@
 var maxColumns = 5
 var maxRows = 20
-var maxItems = maxColumns * maxRows
+var size = 10
 var laptopsInfo
 var autoUpdate = false
 var autoUpdateInterval
 var orderNumber
 var startingLaptop
+
+window.onload = () => {
+    document.getElementById("cols").value = maxColumns
+    document.getElementById("rows").value = maxRows
+    document.getElementById("size").value = size
+}
+
+document.getElementById("cols").addEventListener("keyup", ({key}) => {
+    if(key === "Enter") {
+        maxColumns = document.getElementById("cols").value
+        setupHTML()
+    }
+})
+
+document.getElementById("rows").addEventListener("keyup", ({key}) => {
+    if(key === "Enter"){
+        maxRows = document.getElementById("rows").value
+        setupHTML()
+    }
+})
+
+document.getElementById("size").addEventListener("keyup", ({key}) => {
+    if(key === "Enter"){
+        size = document.getElementById("size").value
+        setupHTML()
+    }
+})
 
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
@@ -75,12 +102,12 @@ function setupHTML(){
     console.log("in setup")
 
     laptopInfoDiv = document.getElementById("laptop-info")
+    laptopInfoDiv.innerHTML = ""
     laptopInfoDiv.style.gridTemplateColumns = "repeat("+maxColumns+", 2fr)"
     laptopInfoDiv.style.gridTemplateRows = "repeat("+maxRows+", 1fr)"
 
-    laptopInfoDiv.innerHTML = ""
-
     startingLaptopFound = false
+    maxItems = maxColumns * maxRows
 
     for(var i = 0; i < laptopsInfo.length; i++){
 
@@ -95,7 +122,7 @@ function setupHTML(){
 
         laptopInfoDiv.innerHTML += "".concat(
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
-                "<h2 style='color:",laptopsInfo[i].labelColor,"'>",laptopsInfo[i].signpostLabel,"</h2>", 
+                "<h2 style='color:",laptopsInfo[i].labelColor,"; font-size:",size * 1.5,"px;'>",laptopsInfo[i].signpostLabel,"</h2>", 
                 "<div id='checkmarks'>",
                     buildCheckmarkDiv(laptopsInfo[i].checkMarks.scriptingData),
                     buildCheckmarkDiv(laptopsInfo[i].checkMarks.synergyId),
@@ -120,5 +147,5 @@ function buildCheckmarkDiv(markStatus){
     }
 
     return "".concat("<div id='checkmark'><img src='", imagePath,
-                     "' width='25' height='25' alt='failed to load image'></div>")
+                     "' width='",size * 2.5,"' height='",size * 2.5,"' alt='failed to load image'></div>")
 }

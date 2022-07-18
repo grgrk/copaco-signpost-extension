@@ -1,12 +1,15 @@
-var maxColumns = 5
-var maxRows = 20
-var size = 10
 var laptopsInfo
 var autoUpdate = false
 var autoUpdateInterval
 var intervalMillis = 10000
+
 var orderNumber
 var startingLaptop
+var orderYear
+
+var maxColumns = 5
+var maxRows = 20
+var size = 10
 
 window.onload = () => {
     document.getElementById("cols").value = maxColumns
@@ -47,7 +50,8 @@ document.getElementById("updateIntervalInSecs").addEventListener("input", (event
 
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
-        startingLaptop = document.getElementById("startingLaptop").value
+        laptopNumber = document.getElementById("startingLaptop").value
+        startingLaptop = glueSPBPrefix(laptopNumber)
         setupHTML()
     }
 })
@@ -58,11 +62,23 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
         dom = mockRequestImagingPageDOM()
         laptopsInfo = scrapeLaptopsInfo(dom)
         startingLaptop = laptopsInfo[0].signpostLabel
-        document.getElementById("startingLaptop").value = startingLaptop
-        console.log(laptopsInfo)
+        orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
+        document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
         setupHTML()
     }
 })
+
+function detectOrderYear(signpostLabel){
+    return signpostLabel.substring(3, 7)
+}
+
+function trimSPBPrefix(signpostLabel){
+    return signpostLabel.substring(8)
+}
+
+function glueSPBPrefix(trimmedSignpostLabel){
+    return "SPB".concat(orderYear,"-",trimmedSignpostLabel)
+}
 
 function requestImagingPageDOM(){
     url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
@@ -134,9 +150,11 @@ function setupHTML(){
         let row = divNumber % maxRows
         if(row == 0) { row = maxRows }
 
+        trimmedSPBLabel = trimSPBPrefix(laptopsInfo[i].signpostLabel)
+
         laptopInfoDiv.innerHTML += "".concat(
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
-                "<h2 style='color:",laptopsInfo[i].labelColor,"; font-size:",size * 1.5,"px;'>",laptopsInfo[i].signpostLabel,"</h2>", 
+                "<h2 style='color:",laptopsInfo[i].labelColor,"; font-size:",size * 1.5,"px;'>",trimmedSPBLabel,"</h2>", 
                 "<div id='checkmarks'>",
                     buildCheckmarkDiv(laptopsInfo[i].checkMarks.scriptingData),
                     buildCheckmarkDiv(laptopsInfo[i].checkMarks.synergyId),

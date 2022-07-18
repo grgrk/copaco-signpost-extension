@@ -14,7 +14,7 @@
     width: 115px;
 }
 
-#cols, #rows, #size {
+#cols, #rows, #size, #updateIntervalInSecs {
     width: 40px;
 }
 

@@ -4,13 +4,15 @@ var size = 10
 var laptopsInfo
 var autoUpdate = false
 var autoUpdateInterval
+var intervalMillis = 10000
 var orderNumber
 var startingLaptop
 
 window.onload = () => {
     document.getElementById("cols").value = maxColumns
     document.getElementById("rows").value = maxRows
-    document.getElementById("size").value = size
+    document.getElementById("size").value = intervalMillis / 1000
+    document.getElementById("updateIntervalInSecs").value = size    
 }
 
 document.getElementById("cols").addEventListener("keyup", ({key}) => {
@@ -34,6 +36,16 @@ document.getElementById("size").addEventListener("keyup", ({key}) => {
     }
 })
 
+document.getElementById("updateIntervalInSecs").addEventListener("input", (event) => {
+    console.log(event.target.value)
+    intervalMillis = event.target.value * 1000
+
+    if(autoUpdate){
+        clearInterval(autoUpdateInterval)
+        setupInterval()
+    }
+})
+
 document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         startingLaptop = document.getElementById("startingLaptop").value
@@ -47,6 +59,7 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
         dom = mockRequestImagingPageDOM()
         laptopsInfo = scrapeLaptopsInfo(dom)
         startingLaptop = laptopsInfo[0].signpostLabel
+        document.getElementById("startingLaptop").value = startingLaptop
         console.log(laptopsInfo)
         setupHTML()
     }
@@ -80,21 +93,23 @@ document.querySelector('.box').addEventListener('click', (event) => {
     }
 
     if(!autoUpdate){
-        autoUpdateInterval = setInterval(() => {
-            laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
-            setupHTML()
-            console.log("update")
-        }, 3000)
+        setupInterval()
     }
 
     autoUpdate = !autoUpdate
     event.target.classList.toggle('pause')
 })
 
+function setupInterval(){
+    autoUpdateInterval = setInterval(() => {
+        laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
+        setupHTML()
+    }, intervalMillis)    
+}
+
 function updateData(){
     laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
     setupHTML()
-    console.log("update")
 }
 
 function setupHTML(){

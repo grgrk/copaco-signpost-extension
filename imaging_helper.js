@@ -60,7 +60,9 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
         dom = mockRequestImagingPageDOM()
+        //console.log(dom)
         laptopsInfo = scrapeLaptopsInfo(dom)
+        console.log(laptopsInfo)
         startingLaptop = laptopsInfo[0].signpostLabel
         orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
         document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)

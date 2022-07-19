@@ -40,6 +40,11 @@ document.getElementById("size").addEventListener("keyup", ({key}) => {
     }
 })
 
+document.getElementById("applyBtn").addEventListener("click", () => {
+    applyItemSettings()
+    setupHTML()
+})
+
 document.getElementById("updateIntervalInSecs").addEventListener("input", (event) => {
     intervalMillis = event.target.value * 1000
 
@@ -80,8 +85,6 @@ function applyItemSettings(){
 
 function loadUserSettings(){
     chrome.storage.local.get(["cols", "rows", "size", "updateInterval"], ( result ) => {
-        console.log(result)
-
         if(result.cols === undefined || result.cols === ""){ 
             document.getElementById("cols").value = maxColumns
         } else {
@@ -109,11 +112,7 @@ function loadUserSettings(){
             document.getElementById("updateIntervalInSecs").value = result.updateInterval
             intervalMillis = result.updateInterval * 1000
         }
-
-        console.log("size: " + size)
     })
-
-    console.log("size: " + size)
 }
 
 function saveUserSettings(){

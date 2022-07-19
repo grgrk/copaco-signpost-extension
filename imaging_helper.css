@@ -28,6 +28,11 @@ header {
     width: 40px;
 }
 
+#applyBtn {
+    margin-left: 10px;
+    width: 50px;
+}
+
 #orderNumber {
     width: 55px;
     margin-right: 4px;

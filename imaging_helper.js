@@ -66,7 +66,7 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
-        dom = mockRequestImagingPageDOM()
+        dom = requestImagingPageDOM()
         laptopsInfo = scrapeLaptopsInfo(dom)
         console.log(laptopsInfo)
         startingLaptop = laptopsInfo[0].signpostLabel
@@ -173,13 +173,13 @@ document.querySelector('.box').addEventListener('click', (event) => {
 
 function setupInterval(){
     autoUpdateInterval = setInterval(() => {
-        laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
+        laptopsInfo = scrapeLaptopsInfo(requestImagingPageDOM())
         setupHTML()
     }, intervalMillis)    
 }
 
 function updateData(){
-    laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
+    laptopsInfo = scrapeLaptopsInfo(requestImagingPageDOM())
     setupHTML()
 }
 

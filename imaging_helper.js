@@ -12,10 +12,11 @@ var maxRows = 20
 var size = 10
 
 window.onload = () => {
-    document.getElementById("cols").value = maxColumns
-    document.getElementById("rows").value = maxRows
-    document.getElementById("size").value = intervalMillis / 1000
-    document.getElementById("updateIntervalInSecs").value = size    
+    loadUserSettings()  
+}
+
+window.onunload = () => {
+    saveUserSettings()
 }
 
 document.getElementById("cols").addEventListener("keyup", ({key}) => {
@@ -52,6 +53,7 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         laptopNumber = document.getElementById("startingLaptop").value
         startingLaptop = glueSPBPrefix(laptopNumber)
+        applyItemSettings()
         setupHTML()
     }
 })
@@ -60,15 +62,68 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
         dom = mockRequestImagingPageDOM()
-        //console.log(dom)
         laptopsInfo = scrapeLaptopsInfo(dom)
         console.log(laptopsInfo)
         startingLaptop = laptopsInfo[0].signpostLabel
         orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
         document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+        applyItemSettings()
         setupHTML()
     }
 })
+
+function applyItemSettings(){
+    maxColumns = document.getElementById("cols").value
+    maxRows = document.getElementById("rows").value
+    size = document.getElementById("size").value
+}
+
+function loadUserSettings(){
+    chrome.storage.local.get(["cols", "rows", "size", "updateInterval"], ( result ) => {
+        console.log(result)
+
+        if(result.cols === undefined || result.cols === ""){ 
+            document.getElementById("cols").value = maxColumns
+        } else {
+            document.getElementById("cols").value = result.cols
+            maxColumns = result.cols
+        }
+
+        if(result.rows === undefined || result.rows === ""){ 
+            document.getElementById("rows").value = maxRows
+        } else {
+            document.getElementById("rows").value = result.rows
+            maxRows = result.rows
+        }
+
+        if(result.size === undefined || result.size === ""){ 
+            document.getElementById("size").value = size
+        } else {
+            document.getElementById("size").value = result.size
+            size = result.size
+        }
+
+        if(result.updateInterval === undefined || result.updateInterval === ""){ 
+            document.getElementById("updateIntervalInSecs").value = intervalMillis / 10
+        } else {
+            document.getElementById("updateIntervalInSecs").value = result.updateInterval
+            intervalMillis = result.updateInterval * 1000
+        }
+
+        console.log("size: " + size)
+    })
+
+    console.log("size: " + size)
+}
+
+function saveUserSettings(){
+    chrome.storage.local.set({
+        cols: document.getElementById("cols").value,
+        rows: document.getElementById("rows").value,
+        size: document.getElementById("size").value,
+        updateInterval: document.getElementById("updateIntervalInSecs").value
+    })
+}
 
 function detectOrderYear(signpostLabel){
     return signpostLabel.substring(3, 7)

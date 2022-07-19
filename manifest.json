@@ -3,7 +3,7 @@
     "name": "App name",
     "version": "1.0",
     
-    "permissions": ["activeTab", "tabs", "alarms"],
+    "permissions": ["activeTab", "tabs", "alarms", "storage"],
     "content_scripts": [
         {
             "matches": ["<all_urls>"],

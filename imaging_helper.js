@@ -156,7 +156,7 @@ function setupHTML(){
 
         laptopInfoDiv.innerHTML += "".concat(
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
-                "<h2 style='color:",laptopsInfo[i].labelColor,"; font-size:",size * 1.5,"px;'>",trimmedSPBLabel,"</h2>", 
+                "<h2 style='color:",laptopsInfo[i].labelColor,"; font-size:",size * 2.2,"px;'>",trimmedSPBLabel,"</h2>", 
                 "<div id='checkmarks'>",
                     buildCheckmarkDiv(laptopsInfo[i].checkMarks.scriptingData),
                     buildCheckmarkDiv(laptopsInfo[i].checkMarks.synergyId),

@@ -8,30 +8,35 @@
     <title>Copaco Imaging Helper</title>
   </head>
   <body>
-    <header>    
-      <label for="orderNumber">Order Number</label>
-      <input type="number" id="orderNumber">
+    <header>
+      <div id="orderSettings">    
+        <label for="orderNumber">Order Number:</label>
+        <input type="number" id="orderNumber">
 
-      <label for="startingLaptop">Starting laptop</label>
-      <input type="text" id="startingLaptop" placeholder="SPB2022-074982">
-
-      <label for="cols">Columns</label>
-      <input type="number" id="cols">
-
-      <label for="rows">Rows</label>
-      <input type="number" id="rows">
-
-      <label for="size">size</label>
-      <input type="number" id="size">     
-
-      <label for="ppbtn">Auto update: </label>
-      <div class="container" id="ppbtn">
-        <div class="box"></div>
+        <label for="startingLaptop">Starting laptop:</label>
+        <input type="text" id="startingLaptop" placeholder="SPB2022-074982">
       </div>
 
-      <label for="updateIntervalInSecs">Update interval (seconds)</label>
-      <input type="number" id="updateIntervalInSecs">    
-      
+      <div id="itemSettings">
+        <label for="cols">Columns:</label>
+        <input type="number" id="cols">
+
+        <label for="rows">Rows:</label>
+        <input type="number" id="rows">
+
+        <label for="size">Size:</label>
+        <input type="number" id="size">     
+      </div>
+
+      <div id="updateSettings">
+        <label for="ppbtn">Auto update: </label>
+        <div class="container" id="ppbtn">
+          <div class="box"></div>
+        </div>
+  
+        <label for="updateIntervalInSecs">interval (secs):</label>
+        <input type="number" id="updateIntervalInSecs">  
+      </div>  
     </header>
     
     <div id="laptop-info"></div>

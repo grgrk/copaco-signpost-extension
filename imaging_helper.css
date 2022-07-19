@@ -1,21 +1,40 @@
-#checkmark {
+body {
+    margin: 0;
+}
+
+header {
+    margin-top: 4px;
+    margin-left: 4px;
+    margin-bottom: 10px;
+}
+
+#updateSettings, #orderSettings, #itemSettings {
+    display: inline-block; 
+    padding-right: 10px;
+    padding-left: 10px;  
+    padding-bottom: 8px; 
+    padding-top: 8px;
+    background-color: #bbbbbb;
+    border-style: solid;
+    border-width: 1px;
+}
+
+#checkmark, #checkmarks {
     display: inline;
 }
 
-#checkmarks {
+#cols, #rows, #size, #updateIntervalInSecs {
     display: inline;
+    width: 40px;
 }
 
 #orderNumber {
     width: 55px;
+    margin-right: 4px;
 }
 
 #startingLaptop {
     width: 115px;
-}
-
-#cols, #rows, #size, #updateIntervalInSecs {
-    width: 40px;
 }
 
 #laptopStatus h2 {
@@ -23,31 +42,29 @@
     margin-right: 5px;
 }
 
+#ppbtn {
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
 #laptop-info {
     display: grid;
-}
-
-h1 {
-    display: inline;
-    margin-right: 25px;
-}
-
-header {
-    margin-bottom: 15px;
+    margin-left: 4px;
 }
 
 .box{
-  width: 25px;
-  height: 25px;
+  width: 16px;
+  height: 16px;
   box-sizing: border-box;
   border-style: solid;
-  border-width: 12px 0px 12px 25px;
+  border-width: 8px 0px 8px 16px;
   border-color: transparent transparent transparent red;
   transition: all 100ms ease-in-out;
 }
 
 label {
     font-size: medium;
+    font-weight: 500;
 }
 
 .container{
@@ -56,5 +73,5 @@ label {
 
 .pause{
   border-style: double;
-  border-width:0px 0px 0px 20px;
+  border-width: 0px 0px 0px 20px;
 }

@@ -12,6 +12,9 @@ var maxColumns = 5
 var maxRows = 20
 var size = 10
 
+var url
+var mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
+
 window.onload = () => {
     loadUserSettings()  
 }
@@ -74,12 +77,11 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
         document.getElementById("loading_animation").style.display = "inline-block"
-        
-        setTimeout(() => {
-            url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
-            mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
 
-            httpGet(mockUrl)
+        url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
+        
+        setTimeout(() => { 
+            httpGet(mockUrl, "initialOrderRequest") 
         }, 10)
     }
 })
@@ -143,14 +145,14 @@ function glueSPBPrefix(trimmedSignpostLabel){
     return "SPB".concat(orderYear,"-",trimmedSignpostLabel)
 }
 
-function httpGet(url)
+function httpGet(url, context)
 {
     try{
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", url, false ); 
         xmlHttp.onreadystatechange = () => {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                handleRequestSuccess(xmlHttp.responseText)
+                handleRequestSuccess(xmlHttp.responseText, context)
             } else {
                 handleRequestFail(xmlHttp.status)
             }
@@ -176,12 +178,16 @@ function handleRequestFail(status){
     document.getElementById("loading_animation").style.display = "none"
 }
 
-function handleRequestSuccess(responseText){
+function handleRequestSuccess(responseText, context){
     dom = new DOMParser().parseFromString(responseText, "text/html")
     laptopsInfo = scrapeLaptopsInfo(dom)
-    startingLaptop = laptopsInfo[0].signpostLabel
-    orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
-    document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+
+    if(context === "initialOrderRequest"){ 
+        startingLaptop = laptopsInfo[0].signpostLabel 
+        orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
+        document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+    }
+
     applyItemSettings()
     setupHTML()
     document.getElementById("loading_animation").style.display = "none"
@@ -198,15 +204,15 @@ document.querySelector('.box').addEventListener('click', (event) => {
 
 function setupInterval(){
     autoUpdateInterval = setInterval(() => {
-        laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
-        setupHTML()
+        document.getElementById("loading_animation").style.display = "block"
+
+        setTimeout(() => {
+            httpGet(mockUrl, "autoUpdateRequest")
+        }, 10)
+
     }, intervalMillis)    
 }
 
-function updateData(){
-    laptopsInfo = scrapeLaptopsInfo(mockRequestImagingPageDOM())
-    setupHTML()
-}
 
 function setupHTML(){
 

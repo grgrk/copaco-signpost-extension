@@ -57,6 +57,14 @@ header {
     margin-left: 4px;
 }
 
+#requestError {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    font-size: xx-large;
+}
+
 .box{
   width: 16px;
   height: 16px;

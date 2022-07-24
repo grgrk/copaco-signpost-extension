@@ -76,19 +76,13 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
         document.getElementById("loading_animation").style.display = "inline-block"
         
         setTimeout(() => {
-            dom = mockRequestImagingPageDOM()
-            laptopsInfo = scrapeLaptopsInfo(dom)
-            startingLaptop = laptopsInfo[0].signpostLabel
-            orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
-            document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
-            applyItemSettings()
-            setupHTML()
-            document.getElementById("loading_animation").style.display = "none"
+            url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
+            mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
+
+            httpGet(mockUrl)
         }, 10)
     }
 })
-
-
 
 function applyItemSettings(){
     maxColumns = document.getElementById("cols").value
@@ -149,36 +143,46 @@ function glueSPBPrefix(trimmedSignpostLabel){
     return "SPB".concat(orderYear,"-",trimmedSignpostLabel)
 }
 
-function requestImagingPageDOM(){
-    url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
-    htmlString = httpGet(url)
-    dom = new DOMParser().parseFromString(htmlString, "text/html")
-    return dom
-}
-
-function mockRequestImagingPageDOM(){
-    htmlString = httpGet("test files/Imaging Windows 7779/Imaging Windows 7779.html")
-    dom = new DOMParser().parseFromString(htmlString, "text/html")
-    return dom    
-}
-
 function httpGet(url)
 {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", url, false ); // false for synchronous request
-    xmlHttp.send( null );
-    return xmlHttp.responseText;
+    try{
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false ); 
+        xmlHttp.onreadystatechange = () => {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                handleRequestSuccess(xmlHttp.responseText)
+            } else {
+                handleRequestFail()
+            }
+        }
+        
+        xmlHttp.send()
+    } catch (error){
+        handleRequestFail()
+    }
+}
+
+function handleRequestFail(){
+    document.getElementById("requestError").style.display = "block"
+    document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."
+    document.getElementById("loading_animation").style.display = "none"
+}
+
+function handleRequestSuccess(responseText){
+    dom = new DOMParser().parseFromString(responseText, "text/html")
+    laptopsInfo = scrapeLaptopsInfo(dom)
+    startingLaptop = laptopsInfo[0].signpostLabel
+    orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
+    document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+    applyItemSettings()
+    setupHTML()
+    document.getElementById("loading_animation").style.display = "none"
 }
 
 document.querySelector('.box').addEventListener('click', (event) => {
 
-    if(autoUpdate){
-        clearInterval(autoUpdateInterval)
-    }
-
-    if(!autoUpdate){
-        setupInterval()
-    }
+    if(autoUpdate){ clearInterval(autoUpdateInterval) }
+    if(!autoUpdate){ setupInterval() }
 
     autoUpdate = !autoUpdate
     event.target.classList.toggle('pause')
@@ -225,11 +229,11 @@ function setupHTML(){
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
                 "<h2 style='color:",laptopsInfo[i].labelColor,"; font-size:",size * 2.2,"px;'>",trimmedSPBLabel,"</h2>", 
                 "<div id='checkmarks'>",
-                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.scriptingData),
-                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.synergyId),
-                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.intune),
-                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.specifications),
-                    buildCheckmarkDiv(laptopsInfo[i].checkMarks.decommisioned),
+                    // buildCheckmarkDiv(laptopsInfo[i].checkMarks.scriptingData),
+                    // buildCheckmarkDiv(laptopsInfo[i].checkMarks.synergyId),
+                    // buildCheckmarkDiv(laptopsInfo[i].checkMarks.intune),
+                    // buildCheckmarkDiv(laptopsInfo[i].checkMarks.specifications),
+                    // buildCheckmarkDiv(laptopsInfo[i].checkMarks.decommisioned),
                 "</div>",
             "</div>"    
         )

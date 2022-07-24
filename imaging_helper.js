@@ -152,19 +152,27 @@ function httpGet(url)
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 handleRequestSuccess(xmlHttp.responseText)
             } else {
-                handleRequestFail()
+                handleRequestFail(xmlHttp.status)
             }
         }
-        
+
         xmlHttp.send()
     } catch (error){
-        handleRequestFail()
+        handleRequestFail("unknown")
     }
 }
 
-function handleRequestFail(){
+function handleRequestFail(status){
     document.getElementById("requestError").style.display = "block"
-    document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."
+
+    switch(status){
+        case "unknown": document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."; break
+        case 500: document.getElementById("requestError").innerHTML = "Error: Signpost internal server error."; break 
+        case 403: document.getElementById("requestError").innerHTML = "Error: Requested data is forbidden."; break      
+        case 401: document.getElementById("requestError").innerHTML = "Error: You are unauthorized."; break       
+        default: document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."    
+    }
+
     document.getElementById("loading_animation").style.display = "none"
 }
 

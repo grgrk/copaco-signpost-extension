@@ -18,9 +18,7 @@ var mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
 
 window.onload = () => {
     loadUserSettings()  
-    document.getElementById("updateSettings").style.opacity = 0.3
-    document.getElementById("updateIntervalInSecs").disabled = true
-    document.getElementById("startingLaptop").disabled = true
+    disableUserInput()
 }
 
 window.onunload = () => {
@@ -180,10 +178,7 @@ function handleRequestFail(status){
     }
 
     document.getElementById("loading_animation").style.display = "none"
-    document.getElementById("updateSettings").style.opacity = 0.3
-    document.getElementById("updateIntervalInSecs").disabled = true
-    document.getElementById("startingLaptop").disabled = true
-    playBtnActive = false
+    disableUserInput()
 }
 
 function handleRequestSuccess(responseText, context){
@@ -199,9 +194,22 @@ function handleRequestSuccess(responseText, context){
     applyItemSettings()
     setupHTML()
     document.getElementById("loading_animation").style.display = "none"
+    enableUserInput()
+}
+
+function disableUserInput(){
+    document.getElementById("updateSettings").style.opacity = 0.3
+    document.getElementById("updateIntervalInSecs").disabled = true
+    document.getElementById("startingLaptop").disabled = true
+    document.getElementById("applyBtn").disabled = true
+    playBtnActive = false
+}
+
+function enableUserInput(){
     document.getElementById("updateSettings").style.opacity = 1
     document.getElementById("updateIntervalInSecs").disabled = false
     document.getElementById("startingLaptop").disabled = false
+    document.getElementById("applyBtn").disabled = false
     playBtnActive = true
 }
 

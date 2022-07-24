@@ -73,16 +73,22 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
-        dom = mockRequestImagingPageDOM()
-        laptopsInfo = scrapeLaptopsInfo(dom)
-        console.log(laptopsInfo)
-        startingLaptop = laptopsInfo[0].signpostLabel
-        orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
-        document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
-        applyItemSettings()
-        setupHTML()
+        document.getElementById("loading_animation").style.display = "inline-block"
+        
+        setTimeout(() => {
+            dom = mockRequestImagingPageDOM()
+            laptopsInfo = scrapeLaptopsInfo(dom)
+            startingLaptop = laptopsInfo[0].signpostLabel
+            orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
+            document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+            applyItemSettings()
+            setupHTML()
+            document.getElementById("loading_animation").style.display = "none"
+        }, 10)
     }
 })
+
+
 
 function applyItemSettings(){
     maxColumns = document.getElementById("cols").value
@@ -114,7 +120,7 @@ function loadUserSettings(){
         }
 
         if(result.updateInterval === undefined || result.updateInterval === ""){ 
-            document.getElementById("updateIntervalInSecs").value = intervalMillis / 10
+            document.getElementById("updateIntervalInSecs").value = intervalMillis / 1000
         } else {
             document.getElementById("updateIntervalInSecs").value = result.updateInterval
             intervalMillis = result.updateInterval * 1000

@@ -1,6 +1,7 @@
 var laptopsInfo
 var autoUpdate = false
 var autoUpdateInterval
+var playBtnActive = false
 var intervalMillis = 10000
 const minimumInterval = 10
 
@@ -17,6 +18,9 @@ var mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
 
 window.onload = () => {
     loadUserSettings()  
+    document.getElementById("updateSettings").style.opacity = 0.3
+    document.getElementById("updateIntervalInSecs").disabled = true
+    document.getElementById("startingLaptop").disabled = true
 }
 
 window.onunload = () => {
@@ -176,6 +180,10 @@ function handleRequestFail(status){
     }
 
     document.getElementById("loading_animation").style.display = "none"
+    document.getElementById("updateSettings").style.opacity = 0.3
+    document.getElementById("updateIntervalInSecs").disabled = true
+    document.getElementById("startingLaptop").disabled = true
+    playBtnActive = false
 }
 
 function handleRequestSuccess(responseText, context){
@@ -191,10 +199,14 @@ function handleRequestSuccess(responseText, context){
     applyItemSettings()
     setupHTML()
     document.getElementById("loading_animation").style.display = "none"
+    document.getElementById("updateSettings").style.opacity = 1
+    document.getElementById("updateIntervalInSecs").disabled = false
+    document.getElementById("startingLaptop").disabled = false
+    playBtnActive = true
 }
 
 document.querySelector('.box').addEventListener('click', (event) => {
-
+    if(!playBtnActive){ return }
     if(autoUpdate){ clearInterval(autoUpdateInterval) }
     if(!autoUpdate){ setupInterval() }
 

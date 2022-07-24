@@ -84,9 +84,27 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
         
         setTimeout(() => { 
             httpGet(mockUrl, "initialOrderRequest") 
+            stopAutoUpdater()
         }, 10)
     }
 })
+
+document.querySelector('.box').addEventListener('click', (event) => {
+    if(!playBtnActive){ return }
+    if(autoUpdate){ clearInterval(autoUpdateInterval) }
+    if(!autoUpdate){ setupInterval() }
+
+    autoUpdate = !autoUpdate
+    event.target.classList.toggle('pause')
+})
+
+function stopAutoUpdater(){
+    if(autoUpdate) {
+        clearInterval(autoUpdateInterval)
+        autoUpdate = !autoUpdate
+        document.querySelector('.box').classList.toggle('pause')
+    }
+}
 
 function applyItemSettings(){
     maxColumns = document.getElementById("cols").value
@@ -212,15 +230,6 @@ function enableUserInput(){
     document.getElementById("applyBtn").disabled = false
     playBtnActive = true
 }
-
-document.querySelector('.box').addEventListener('click', (event) => {
-    if(!playBtnActive){ return }
-    if(autoUpdate){ clearInterval(autoUpdateInterval) }
-    if(!autoUpdate){ setupInterval() }
-
-    autoUpdate = !autoUpdate
-    event.target.classList.toggle('pause')
-})
 
 function setupInterval(){
     autoUpdateInterval = setInterval(() => {

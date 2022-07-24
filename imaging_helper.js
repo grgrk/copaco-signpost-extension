@@ -2,6 +2,7 @@ var laptopsInfo
 var autoUpdate = false
 var autoUpdateInterval
 var intervalMillis = 10000
+const minimumInterval = 10
 
 var orderNumber
 var startingLaptop
@@ -46,7 +47,13 @@ document.getElementById("applyBtn").addEventListener("click", () => {
 })
 
 document.getElementById("updateIntervalInSecs").addEventListener("input", (event) => {
-    intervalMillis = event.target.value * 1000
+    if(event.target.value < minimumInterval){
+        document.getElementById("updateIntervalInSecs").style.background = "#ff0000"
+        intervalMillis = minimumInterval * 1000
+    } else {
+        document.getElementById("updateIntervalInSecs").style.background = "#ffffff"
+        intervalMillis = event.target.value * 1000
+    }
 
     if(autoUpdate){
         clearInterval(autoUpdateInterval)

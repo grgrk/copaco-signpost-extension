@@ -252,6 +252,12 @@ function setupHTML(){
             "</div>"    
         )
     }
+
+    if(!startingLaptopFound){
+        document.getElementById('startingLaptop').style.background = "#ff0000"
+    } else {
+        document.getElementById('startingLaptop').style.background = "#ffffff"
+    }
 }
 
 function buildCheckmarkDiv(markStatus){

@@ -83,7 +83,7 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
         url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
         
         setTimeout(() => { 
-            httpGet(mockUrl, "initialOrderRequest") 
+            httpGet(url, "initialOrderRequest") 
             if(autoUpdate) { stopAutoUpdater() }
         }, 10)
     }
@@ -237,7 +237,7 @@ function setupTimeout(){
         document.getElementById("loading_animation").style.display = "block"
 
         setTimeout(() => {
-            httpGet(mockUrl, "autoUpdateRequest")
+            httpGet(url, "autoUpdateRequest")
         }, 10)
     }, intervalMillis)    
 }

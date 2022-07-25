@@ -1,6 +1,6 @@
 var laptopsInfo
 var autoUpdate = false
-var autoUpdateInterval
+var autoUpdateTimeout
 var playBtnActive = false
 var intervalMillis = 10000
 const minimumInterval = 10
@@ -61,8 +61,8 @@ document.getElementById("updateIntervalInSecs").addEventListener("input", (event
     }
 
     if(autoUpdate){
-        clearInterval(autoUpdateInterval)
-        setupInterval()
+        clearTimeout(autoUpdateTimeout)
+        setupTimeout()
     }
 })
 
@@ -84,26 +84,25 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
         
         setTimeout(() => { 
             httpGet(mockUrl, "initialOrderRequest") 
-            stopAutoUpdater()
+            if(autoUpdate) { stopAutoUpdater() }
         }, 10)
     }
 })
 
 document.querySelector('.box').addEventListener('click', (event) => {
     if(!playBtnActive){ return }
-    if(autoUpdate){ clearInterval(autoUpdateInterval) }
-    if(!autoUpdate){ setupInterval() }
+    if(autoUpdate){ clearTimeout(autoUpdateTimeout) }
+    if(!autoUpdate){ setupTimeout() }
 
     autoUpdate = !autoUpdate
     event.target.classList.toggle('pause')
 })
 
 function stopAutoUpdater(){
-    if(autoUpdate) {
-        clearInterval(autoUpdateInterval)
-        autoUpdate = !autoUpdate
-        document.querySelector('.box').classList.toggle('pause')
-    }
+    console.log("hier")
+    clearTimeout(autoUpdateTimeout)
+    autoUpdate = false
+    document.querySelector('.box').classList.toggle('pause') 
 }
 
 function applyItemSettings(){
@@ -213,6 +212,7 @@ function handleRequestSuccess(responseText, context){
     setupHTML()
     document.getElementById("loading_animation").style.display = "none"
     enableUserInput()
+    if(autoUpdate) { setupTimeout() }
 }
 
 function disableUserInput(){
@@ -231,14 +231,14 @@ function enableUserInput(){
     playBtnActive = true
 }
 
-function setupInterval(){
-    autoUpdateInterval = setInterval(() => {
+function setupTimeout(){
+    autoUpdateTimeout = setTimeout(() => {
+        if(!autoUpdate) { return }
         document.getElementById("loading_animation").style.display = "block"
 
         setTimeout(() => {
             httpGet(mockUrl, "autoUpdateRequest")
         }, 10)
-
     }, intervalMillis)    
 }
 

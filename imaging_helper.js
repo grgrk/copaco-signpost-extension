@@ -15,6 +15,7 @@ var size = 10
 
 var url
 var mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
+//var mockUrl = "test files/Imaging Windows.html"
 
 window.onload = () => {
     loadUserSettings()  

@@ -78,7 +78,7 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
-        document.getElementById("loading_animation").style.display = "inline-block"
+        showLoadingAnimation()
 
         url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
         
@@ -99,7 +99,6 @@ document.querySelector('.box').addEventListener('click', (event) => {
 })
 
 function stopAutoUpdater(){
-    console.log("hier")
     clearTimeout(autoUpdateTimeout)
     autoUpdate = false
     document.querySelector('.box').classList.toggle('pause') 
@@ -184,19 +183,20 @@ function httpGet(url, context)
 }
 
 function handleRequestFail(status){
-    document.getElementById("requestError").style.display = "block"
 
     switch(status){
-        case "unknown": document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."; break
-        case 500: document.getElementById("requestError").innerHTML = "Error: Signpost internal server error."; break 
-        case 403: document.getElementById("requestError").innerHTML = "Error: Requested data is forbidden."; break      
-        case 401: document.getElementById("requestError").innerHTML = "Error: You are unauthorized."; break       
-        default: document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."    
+        case "unknown": showError("Order " + orderNumber + " was not found."); break
+        case 500: showError("Error: Signpost internal server error."); break 
+        case 403: showError("Error: Requested data is forbidden."); break      
+        case 401: showError("Error: You are unauthorized."); break       
+        default: showError("Order " + orderNumber + " was not found.")    
     }
 
-    document.getElementById("loading_animation").style.display = "none"
+    hideLoadingAnimation()
     disableUserInput()
 }
+
+
 
 function handleRequestSuccess(responseText, context){
     dom = new DOMParser().parseFromString(responseText, "text/html")
@@ -210,7 +210,8 @@ function handleRequestSuccess(responseText, context){
 
     applyItemSettings()
     setupHTML()
-    document.getElementById("loading_animation").style.display = "none"
+    hideLoadingAnimation()
+    hideError()
     enableUserInput()
     if(autoUpdate) { setupTimeout() }
 }
@@ -234,7 +235,7 @@ function enableUserInput(){
 function setupTimeout(){
     autoUpdateTimeout = setTimeout(() => {
         if(!autoUpdate) { return }
-        document.getElementById("loading_animation").style.display = "block"
+        showLoadingAnimation()
 
         setTimeout(() => {
             httpGet(mockUrl, "autoUpdateRequest")
@@ -242,10 +243,9 @@ function setupTimeout(){
     }, intervalMillis)    
 }
 
-
 function setupHTML(){
 
-    console.log("in setup")
+    console.log("in setup HTML")
 
     laptopInfoDiv = document.getElementById("laptop-info")
     laptopInfoDiv.innerHTML = ""
@@ -302,4 +302,21 @@ function buildCheckmarkDiv(markStatus){
 
     return "".concat("<div id='checkmark'><img src='", imagePath,
                      "' width='",size * 2.5,"' height='",size * 2.5,"' alt='failed to load image'></div>")
+}
+
+function showError(msg){
+    document.getElementById("requestError").style.display = "block"
+    document.getElementById("requestError").innerHTML = msg
+}
+
+function hideError(){
+    document.getElementById("requestError").style.display = "none"
+}
+
+function showLoadingAnimation(){
+    document.getElementById("loading_animation").style.display = "inline-block"
+}
+
+function hideLoadingAnimation(){
+    document.getElementById("loading_animation").style.display = "none"
 }

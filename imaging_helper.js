@@ -6,8 +6,10 @@ var intervalMillis = 10000
 const minimumInterval = 10
 
 var orderNumber
-var startingLaptop
 var orderYear
+
+var startingLaptop
+var lastLaptopOnScreen
 
 var maxColumns = 5
 var maxRows = 20
@@ -15,6 +17,7 @@ var size = 10
 
 var url
 var mockUrl = "test files/Imaging Windows 7779/Imaging Windows 7779.html"
+//var mockUrl = "test files/Imaging Windows.html"
 
 window.onload = () => {
     loadUserSettings()  
@@ -75,10 +78,50 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
     }
 })
 
+document.getElementById("nextPageBtn").addEventListener("click", () => {
+    //TODO bug fix: If trimmed label starts with an 0 the calculation will erase this from the string.
+    let potentialNewStartinglaptop = glueSPBPrefix(parseInt(trimSPBPrefix(lastLaptopOnScreen)) + 1)
+
+    console.log(potentialNewStartinglaptop)
+    console.log(getLastLaptopLabel())
+
+    if(laptopExists(potentialNewStartinglaptop)) { startingLaptop = potentialNewStartinglaptop }
+    else { 
+        console.log(parseInt(trimSPBPrefix(getLastLaptopLabel())) - maxColumns * maxRows)
+        startingLaptop = glueSPBPrefix(parseInt(trimSPBPrefix(getLastLaptopLabel())) - maxColumns * maxRows + 1)
+    }
+
+    document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+    setupHTML()
+})
+
+document.getElementById("prevPageBtn").addEventListener("click", () => {
+    //TODO bug fix: If trimmed label starts with an 0 the calculation will erase this from the string.
+    let potentialNewStartinglaptop = glueSPBPrefix(parseInt(trimSPBPrefix(startingLaptop)) - maxColumns * maxRows)
+
+    if(laptopExists(potentialNewStartinglaptop)) { startingLaptop = potentialNewStartinglaptop } 
+    else                                         { startingLaptop = laptopsInfo[0].signpostLabel }
+
+    document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+    setupHTML()  
+})
+
+function laptopExists(signpostLabel){
+    for (var i = 0; i < laptopsInfo.length; i++) {
+        if(laptopsInfo[i].signpostLabel === signpostLabel){ return true }
+    }
+
+    return false
+}
+
+function getLastLaptopLabel(){
+    return laptopsInfo[laptopsInfo.length - 1].signpostLabel
+}
+
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
-        document.getElementById("loading_animation").style.display = "inline-block"
+        showLoadingAnimation()
 
         url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
         
@@ -99,7 +142,6 @@ document.querySelector('.box').addEventListener('click', (event) => {
 })
 
 function stopAutoUpdater(){
-    console.log("hier")
     clearTimeout(autoUpdateTimeout)
     autoUpdate = false
     document.querySelector('.box').classList.toggle('pause') 
@@ -184,19 +226,20 @@ function httpGet(url, context)
 }
 
 function handleRequestFail(status){
-    document.getElementById("requestError").style.display = "block"
 
     switch(status){
-        case "unknown": document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."; break
-        case 500: document.getElementById("requestError").innerHTML = "Error: Signpost internal server error."; break 
-        case 403: document.getElementById("requestError").innerHTML = "Error: Requested data is forbidden."; break      
-        case 401: document.getElementById("requestError").innerHTML = "Error: You are unauthorized."; break       
-        default: document.getElementById("requestError").innerHTML = "Order " + orderNumber + " was not found."    
+        case "unknown": showError("Order " + orderNumber + " was not found."); break
+        case 500: showError("Error: Signpost internal server error."); break 
+        case 403: showError("Error: Requested data is forbidden."); break      
+        case 401: showError("Error: You are unauthorized."); break       
+        default: showError("Order " + orderNumber + " was not found.")    
     }
 
-    document.getElementById("loading_animation").style.display = "none"
+    hideLoadingAnimation()
     disableUserInput()
 }
+
+
 
 function handleRequestSuccess(responseText, context){
     dom = new DOMParser().parseFromString(responseText, "text/html")
@@ -210,7 +253,8 @@ function handleRequestSuccess(responseText, context){
 
     applyItemSettings()
     setupHTML()
-    document.getElementById("loading_animation").style.display = "none"
+    hideLoadingAnimation()
+    hideError()
     enableUserInput()
     if(autoUpdate) { setupTimeout() }
 }
@@ -220,6 +264,8 @@ function disableUserInput(){
     document.getElementById("updateIntervalInSecs").disabled = true
     document.getElementById("startingLaptop").disabled = true
     document.getElementById("applyBtn").disabled = true
+    document.getElementById("nextPageBtn").disabled = true
+    document.getElementById("prevPageBtn").disabled = true
     playBtnActive = false
 }
 
@@ -228,13 +274,15 @@ function enableUserInput(){
     document.getElementById("updateIntervalInSecs").disabled = false
     document.getElementById("startingLaptop").disabled = false
     document.getElementById("applyBtn").disabled = false
+    document.getElementById("nextPageBtn").disabled = false
+    document.getElementById("prevPageBtn").disabled = false
     playBtnActive = true
 }
 
 function setupTimeout(){
     autoUpdateTimeout = setTimeout(() => {
         if(!autoUpdate) { return }
-        document.getElementById("loading_animation").style.display = "block"
+        showLoadingAnimation()
 
         setTimeout(() => {
             httpGet(url, "autoUpdateRequest")
@@ -242,10 +290,9 @@ function setupTimeout(){
     }, intervalMillis)    
 }
 
-
 function setupHTML(){
 
-    console.log("in setup")
+    console.log("in setup HTML")
 
     laptopInfoDiv = document.getElementById("laptop-info")
     laptopInfoDiv.innerHTML = ""
@@ -267,6 +314,7 @@ function setupHTML(){
         if(row == 0) { row = maxRows }
 
         trimmedSPBLabel = trimSPBPrefix(laptopsInfo[i].signpostLabel)
+        lastLaptopOnScreen = laptopsInfo[i].signpostLabel
 
         laptopInfoDiv.innerHTML += "".concat(
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",
@@ -302,4 +350,21 @@ function buildCheckmarkDiv(markStatus){
 
     return "".concat("<div id='checkmark'><img src='", imagePath,
                      "' width='",size * 2.5,"' height='",size * 2.5,"' alt='failed to load image'></div>")
+}
+
+function showError(msg){
+    document.getElementById("requestError").style.display = "block"
+    document.getElementById("requestError").innerHTML = msg
+}
+
+function hideError(){
+    document.getElementById("requestError").style.display = "none"
+}
+
+function showLoadingAnimation(){
+    document.getElementById("loading_animation").style.display = "inline-block"
+}
+
+function hideLoadingAnimation(){
+    document.getElementById("loading_animation").style.display = "none"
 }

@@ -28,7 +28,7 @@ function scrapeLaptopsInfo(dom){
                     if(divElement.classList.contains("text-danger")){
                         infoObject.labelColor = "#ec6523"
                     } else {
-                        infoObject.labelColor = "#000000"
+                        infoObject.labelColor = "#2eb82c"
                     }
 
                     for(var k=0; k < divElement.children.length; k++){
@@ -36,7 +36,6 @@ function scrapeLaptopsInfo(dom){
                         if(divElement.children[k].nodeName === "LABEL"){
                             if(!signpostLabelSet) { 
                                 infoObject.signpostLabel = divElement.children[k].textContent 
-                                //infoObject.labelColor = window.getComputedStyle(divElement.children[k]).getPropertyValue("color")
                             }
                             else { infoObject.schoolLabel = divElement.children[k].textContent }
                             signpostLabelSet = true;

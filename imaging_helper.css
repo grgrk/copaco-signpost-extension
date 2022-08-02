@@ -35,6 +35,11 @@ header {
     font-size: 15px;
 }
 
+#nextPageBtn, #prevPageBtn {
+    height: 26px;
+    font-size: 15px;
+}
+
 #orderNumber {
     width: 57px;
     margin-right: 4px;

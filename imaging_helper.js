@@ -6,8 +6,10 @@ var intervalMillis = 10000
 const minimumInterval = 10
 
 var orderNumber
-var startingLaptop
 var orderYear
+
+var startingLaptop
+var lastLaptopOnScreen
 
 var maxColumns = 5
 var maxRows = 20
@@ -75,6 +77,46 @@ document.getElementById("startingLaptop").addEventListener("keyup", ({key}) => {
         setupHTML()
     }
 })
+
+document.getElementById("nextPageBtn").addEventListener("click", () => {
+    //TODO bug fix: If trimmed label starts with an 0 the calculation will erase this from the string.
+    let potentialNewStartinglaptop = glueSPBPrefix(parseInt(trimSPBPrefix(lastLaptopOnScreen)) + 1)
+
+    console.log(potentialNewStartinglaptop)
+    console.log(getLastLaptopLabel())
+
+    if(laptopExists(potentialNewStartinglaptop)) { startingLaptop = potentialNewStartinglaptop }
+    else { 
+        console.log(parseInt(trimSPBPrefix(getLastLaptopLabel())) - maxColumns * maxRows)
+        startingLaptop = glueSPBPrefix(parseInt(trimSPBPrefix(getLastLaptopLabel())) - maxColumns * maxRows + 1)
+    }
+
+    document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+    setupHTML()
+})
+
+document.getElementById("prevPageBtn").addEventListener("click", () => {
+    //TODO bug fix: If trimmed label starts with an 0 the calculation will erase this from the string.
+    let potentialNewStartinglaptop = glueSPBPrefix(parseInt(trimSPBPrefix(startingLaptop)) - maxColumns * maxRows)
+
+    if(laptopExists(potentialNewStartinglaptop)) { startingLaptop = potentialNewStartinglaptop } 
+    else                                         { startingLaptop = laptopsInfo[0].signpostLabel }
+
+    document.getElementById("startingLaptop").value = trimSPBPrefix(startingLaptop)
+    setupHTML()  
+})
+
+function laptopExists(signpostLabel){
+    for (var i = 0; i < laptopsInfo.length; i++) {
+        if(laptopsInfo[i].signpostLabel === signpostLabel){ return true }
+    }
+
+    return false
+}
+
+function getLastLaptopLabel(){
+    return laptopsInfo[laptopsInfo.length - 1].signpostLabel
+}
 
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
@@ -222,6 +264,8 @@ function disableUserInput(){
     document.getElementById("updateIntervalInSecs").disabled = true
     document.getElementById("startingLaptop").disabled = true
     document.getElementById("applyBtn").disabled = true
+    document.getElementById("nextPageBtn").disabled = true
+    document.getElementById("prevPageBtn").disabled = true
     playBtnActive = false
 }
 
@@ -230,6 +274,8 @@ function enableUserInput(){
     document.getElementById("updateIntervalInSecs").disabled = false
     document.getElementById("startingLaptop").disabled = false
     document.getElementById("applyBtn").disabled = false
+    document.getElementById("nextPageBtn").disabled = false
+    document.getElementById("prevPageBtn").disabled = false
     playBtnActive = true
 }
 
@@ -268,6 +314,7 @@ function setupHTML(){
         if(row == 0) { row = maxRows }
 
         trimmedSPBLabel = trimSPBPrefix(laptopsInfo[i].signpostLabel)
+        lastLaptopOnScreen = laptopsInfo[i].signpostLabel
 
         laptopInfoDiv.innerHTML += "".concat(
             "<div id='laptopStatus' style='grid-area: ",row," / ",column,"'>",

@@ -19,6 +19,27 @@ function receiveMessage(msg, sender, sendResponse){
     }
 }
 
+window.onload = () => {
+    chrome.runtime.sendMessage({ type: "scanner_mode_request" }, (response) => {
+        if(response.scannerMode){ setupScannerMode() } 
+    })
+}
+
+function setupScannerMode(){
+    let laptopsInfo = scrapeLaptopsInfo(document)
+
+    // toggle other divs except found serialnumber + 10
+    let laptopDivsWithSerialNumber = $("#serial:not([value|=''])").parent().parent()
+    laptopDivsWithSerialNumber.toggle()
+
+    let laptopDivsWithoutSerialNumberExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
+    laptopDivsWithoutSerialNumberExceptFirst10.toggle()
+
+    //toggle unneccesary info
+    let bullshit = $("form").parent().children().filter(":not(form)")
+    //bullshit.toggle()
+}
+
 function pasteModelVersion(msg){
     var allElements = document.getElementsByTagName("*")
 

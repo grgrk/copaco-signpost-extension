@@ -239,8 +239,6 @@ function handleRequestFail(status){
     disableUserInput()
 }
 
-
-
 function handleRequestSuccess(responseText, context){
     dom = new DOMParser().parseFromString(responseText, "text/html")
     laptopsInfo = scrapeLaptopsInfo(dom)

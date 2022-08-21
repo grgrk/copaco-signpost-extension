@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             break
         case "scanner_mode_request":
             sendResponse({ scannerMode: scannerMode })
-            break    
+            break
     }
 })
 

@@ -32,7 +32,6 @@ function setupScannerModeToggleDiv(scannerMode){
 
     jQuery("<input>", {type: "checkbox", id: "checkbox_scanner_mode", checked: scannerMode})
         .on("change", (event) => { 
-            console.log(event.currentTarget.checked) 
             chrome.runtime.sendMessage({ 
                 type: "toggle_scanner_mode", scannerMode: event.currentTarget.checked
             })
@@ -48,26 +47,67 @@ function setupScannerModeToggleDiv(scannerMode){
 function setupScannerMode(){
     let laptopsInfo = scrapeLaptopsInfo(document)
 
-    // toggle other divs except found serialnumber + 10
-    let laptopDivsWithSerialNumber = $("#serial:not([value|=''])").parent().parent()
-    laptopDivsWithSerialNumber.toggle()
+    let divsWithSerial = $("#serial:not([value|=''])").parent().parent()
+    divsWithSerial.toggle()
 
-    let laptopDivsWithoutSerialNumberExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
-    laptopDivsWithoutSerialNumberExceptFirst10.toggle()
+    let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
+    divsWithEmptySerialsExceptFirst10.toggle()
 
-    //toggle unneccesary info
     let bullshit = $("form").parent().children().filter(":not(form)")
     //bullshit.toggle()
+
+    setupCheckBtn()
+    $("#save").prop("disabled", true)
 }
 
 function removeScannerMode(){
     // toggle other divs except found serialnumber + 10
-    let laptopDivsWithSerialNumber = $("#serial:not([value|=''])").parent().parent()
-    laptopDivsWithSerialNumber.toggle()
+    let divsWithSerial = $("#serial:not([value|=''])").parent().parent()
+    divsWithSerial.toggle()
 
-    let laptopDivsWithoutSerialNumberExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
-    laptopDivsWithoutSerialNumberExceptFirst10.toggle()
+    let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
+    divsWithEmptySerialsExceptFirst10.toggle()
+
+    $("#check_btn").remove()
 }
+
+function setupCheckBtn(){
+    let checkBtn = jQuery("<input>", {
+        type: "button", class: "btn btn-success",
+        id: "check_btn", value: "Check"
+    })
+    .css("margin-right","10px")
+    .on("click", () => {
+        let currentSerials = $("[id=serial]")
+            .parent().parent()
+            .filter((idx, elem) => { return window.getComputedStyle(elem).display !== 'none' })
+            .find(".col-sm:lt(1)")
+            .find("input")
+        
+        console.log(currentSerials)
+
+        let success = true
+        currentSerials.each((idx, elem) => {
+            if(elem.value === '') {
+                success = false
+                elem.style.backgroundColor = "#ff0000"
+                elem.style.color = "#ffffff"
+            } else {
+                elem.style.backgroundColor = "#ffffff"
+                elem.style.color = "#000000"
+            }
+        })
+
+        if(success){
+            $("#save").prop("disabled", false) 
+        } else {
+            $("#save").prop("disabled", true)
+        }                  
+    })
+
+    $("#save").before(checkBtn)
+}
+
 
 function pasteModelVersion(msg){
     var allElements = document.getElementsByTagName("*")
@@ -78,11 +118,6 @@ function pasteModelVersion(msg){
             allElements[i].value = msg.txt
         }
     }
-}
-
-function checkSerialNumbers(){
-    serialInfo = getSerialInfo()
-    console.log(serialInfo)
 }
 
 function findDuplicateSerialNumbers(serialInfo){

@@ -51,7 +51,7 @@ function setupScannerModeToggleDiv(scannerMode){
             if(event.currentTarget.checked) setupScannerMode() 
             else                            removeScannerMode()
         })
-        .appendTo(div)
+        .appendTo(div)  
 
     $(".fixed-top nav #navbarSupportedContent").after(div)
 }
@@ -63,10 +63,15 @@ function setupScannerMode(){
     let divsWithSerial = $("#serial:not([value|=''])").parent().parent().toggle()
     let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent().toggle()
 
-    //let bullshit = $("form").parent().children().filter(":not(form)")
-    //bullshit.toggle()
+    var currentSerialBatch = $("[id=serial]")
+        .parent().parent()
+        .filter((idx, elem) => { return window.getComputedStyle(elem).display !== 'none' })
+        .find(".col-sm:lt(1)")
+        .find("input")
 
-    setupCheckBtn()
+    setupErrorDiv()
+
+    setupCheckBtn(currentSerialBatch)
     $("#save").prop("disabled", true)
 }
 
@@ -83,33 +88,63 @@ function removeScannerMode(){
     $("#save").prop("disabled", true)
 }
 
-function setupCheckBtn(){
+function setupErrorDiv(){
+    let errorDiv = $('<div>', { id: "error_div" }) 
+
+    $("<span>",{ id: "err_empty" })
+        .append("Error: Empty serial numbers detected.")
+        .css("color","red").css("display","block")
+        .appendTo(errorDiv).toggle()
+    $("<span>",{ id: "err_prefix" })
+        .append("Error: Prefixes of serial numbers dont match up.")
+        .css("color","red").css("display","block")
+        .appendTo(errorDiv).toggle()
+    $("<span>",{ id: "err_duplicate" })
+        .append("Error: Duplicate serial numbers found.")
+        .css("color","red").css("display","block")
+        .appendTo(errorDiv).toggle()
+    
+    $("form").append(errorDiv)
+}
+
+function setupCheckBtn(currentSerialBatch){
     let checkBtn = jQuery("<input>", {
         type: "button", class: "btn btn-success",
         id: "check_btn", value: "Check"
     })
     .css("margin-right","10px")
     .on("click", () => {
-        var currentSerialBatch = $("[id=serial]")
-            .parent().parent()
-            .filter((idx, elem) => { return window.getComputedStyle(elem).display !== 'none' })
-            .find(".col-sm:lt(1)")
-            .find("input")
-
         let inputsWithSerial  = $("#serial:not([value|=''])")
         let allSavedSerials = inputsWithSerial.map((idx, elem) => { return elem.value }).get()
 
-        if(checkForEmptySerials(currentSerialBatch)) 
-              $("#save").prop("disabled", false) 
-        else  $("#save").prop("disabled", true)
+        let noEmptySerials = checkForEmptySerials(currentSerialBatch)
+        let noWrongPrefixes = checkForWrongPrefixes(currentSerialBatch, allSavedSerials)
+        let noDuplicates = checkForDuplicates(currentSerialBatch, allSavedSerials)
 
-        if(checkForWrongPrefixes(currentSerialBatch, allSavedSerials))
-              $("#save").prop("disabled", false) 
-        else  $("#save").prop("disabled", true)
+        if(noEmptySerials){
+            $("#err_empty").css("display", "none") 
+        } else { 
+            $("#save").prop("disabled", true)
+            $("#err_empty").css("display", "block")  
+        }
 
-        if(checkForDuplicates(currentSerialBatch, allSavedSerials))
-              $("#save").prop("disabled", false) 
-        else  $("#save").prop("disabled", true)        
+        if(noWrongPrefixes){
+            $("#err_prefix").css("display", "none")
+        } else { 
+            $("#save").prop("disabled", true) 
+            $("#err_prefix").css("display", "block")
+        }
+
+        if(noDuplicates){
+            $("#err_duplicate").css("display", "none")
+        } else {
+            $("#save").prop("disabled", true)    
+            $("#err_duplicate").css("display", "block")  
+        }   
+        
+        if(noEmptySerials && noWrongPrefixes && noDuplicates){
+            $("#save").prop("disabled", false) 
+        }
     })
 
     $("#save").before(checkBtn)
@@ -119,8 +154,11 @@ function checkForWrongPrefixes(currentSerialBatch, allSavedSerials){
     let prefix = detectPrefix(allSavedSerials)
 
     let success = true
-    currentSerialBatch.each((idx, elem) => {       
-        if(!elem.value.startsWith(prefix)) { errorizeField(elem); success = false }
+    currentSerialBatch.each((idx, elem) => {      
+        if(!elem.value.startsWith(prefix) && elem.value != ''){ 
+            errorizeField(elem) 
+            success = false 
+        }
     })
 
     return success
@@ -164,6 +202,7 @@ function detectPrefix(words){
 }
 
 function countOccurences(arr, val){
+    if(val == '') return 0
     return arr.reduce((a, v) => (v === val ? a + 1 : a), 0)
 }
 

@@ -6,7 +6,7 @@
     "permissions": ["activeTab", "tabs", "alarms", "storage"],
     "content_scripts": [
         {
-            "matches": ["file:///C:/dev/projects/javascript/copaco-model-version-extension/test%20files/Imaging%20Windows%207779/Imaging%20Windows%207779.html"],
+            "matches": ["<all_urls>"],
             "js": ["content.js", "jquery-3.6.0.min.js", "scraper.js"]
         }
     ],

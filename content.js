@@ -1,4 +1,4 @@
-console.log("content script hello")
+console.log("Content script is running on this page.")
 
 chrome.runtime.onMessage.addListener(receiveMessage)
 
@@ -14,9 +14,21 @@ function receiveMessage(msg, sender, sendResponse){
 }
 
 window.onload = () => {
+    markEvery84thLaptop()
+
     chrome.runtime.sendMessage({ type: "scanner_mode_request"}, (response) => {
         if(response.scannerMode){ setupScannerMode() }
         setupScannerModeToggleDiv(response.scannerMode)
+    })
+}
+
+function markEvery84thLaptop(){
+    let allLaptopDivs = $("[id=serial]").parent().parent()
+
+    allLaptopDivs.each((idx, elem) => {
+        if(idx % 84 == 0 && idx != 0) {
+            elem.style.backgroundColor = "#ffff66"
+        }
     })
 }
 

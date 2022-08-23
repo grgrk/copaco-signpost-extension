@@ -83,26 +83,28 @@ function setupCheckBtn(){
             .filter((idx, elem) => { return window.getComputedStyle(elem).display !== 'none' })
             .find(".col-sm:lt(1)")
             .find("input")
-        
-        console.log(currentSerialBatch)
+
+        let inputsWithSerial  = $("#serial:not([value|=''])")
+        let allSavedSerials = inputsWithSerial.map((idx, elem) => { return elem.value }).get()
 
         if(checkForEmptySerials(currentSerialBatch)) 
               $("#save").prop("disabled", false) 
         else  $("#save").prop("disabled", true)
 
-        if(checkForWrongPrefixes(currentSerialBatch))
+        if(checkForWrongPrefixes(currentSerialBatch, allSavedSerials))
               $("#save").prop("disabled", false) 
         else  $("#save").prop("disabled", true)
+
+        if(checkForDuplicates(currentSerialBatch, allSavedSerials))
+              $("#save").prop("disabled", false) 
+        else  $("#save").prop("disabled", true)        
     })
 
     $("#save").before(checkBtn)
 }
 
-function checkForWrongPrefixes(currentSerialBatch){
-    let inputsWithSerial  = $("#serial:not([value|=''])")
-    let allSerialStrings = inputsWithSerial.map((idx, elem) => { return elem.value }).get()
-
-    let prefix = detectPrefix(allSerialStrings)
+function checkForWrongPrefixes(currentSerialBatch, allSavedSerials){
+    let prefix = detectPrefix(allSavedSerials)
 
     let success = true
     currentSerialBatch.each((idx, elem) => {       
@@ -122,6 +124,21 @@ function checkForEmptySerials(currentSerialBatch){
     return success
 }
 
+function checkForDuplicates(currentSerialBatch, allSavedSerials){
+    let allSerials = allSavedSerials
+        .concat(currentSerialBatch.map((idx, elem) => { return elem.value }).get())
+
+    let success = true
+    currentSerialBatch.each((idx, elem) => {
+        if(countOccurences(allSerials, elem.value) > 1){
+            errorizeField(elem)
+            success = false
+        }
+    })
+
+    return success
+}
+
 function detectPrefix(words){
     // check border cases size 1 array and empty first word)
     if (!words[0] || words.length ==  1) return words[0] || "";
@@ -134,6 +151,10 @@ function detectPrefix(words){
     return words[0].substr(0, i);
 }
 
+function countOccurences(arr, val){
+    return arr.reduce((a, v) => (v === val ? a + 1 : a), 0)
+}
+
 function errorizeField(elem){
     elem.style.backgroundColor = "#ff0000"
     elem.style.color = "#ffffff"
@@ -144,7 +165,6 @@ function clearErrorization(elem){
     elem.style.color = "#000000"
 }
 
-
 function pasteModelVersion(msg){
     var allElements = document.getElementsByTagName("*")
 
@@ -154,30 +174,5 @@ function pasteModelVersion(msg){
             allElements[i].value = msg.txt
         }
     }
-}
-
-function findDuplicateSerialNumbers(serialInfo){
-
-    //var duplicates = [{ signpostLabels: ["SPB2022-074983","SPB2022-074983"], serialNumber: "xd-2345" }]
-
-    var duplicates = []
-
-    for (var i = 0; i < serialInfo.length-1; i++)
-    {
-        duplicateObject = { signpostLabels: [] }
-
-        for (var j = i + 1; j < serialInfo.length; j++)
-        {
-            if (serialInfo[i].serialNumber === serialInfo[j].serialNumber){
-                duplicateObject.signpostLabels.push(serialInfo[i].signpostLabel)
-                duplicateObject.signpostLabels.push(serialInfo[j].signpostLabel)
-                duplicateObject.serialNumber = serialInfo[i].serialNumber
-            }
-        }
-
-        duplicates.push(duplicateObject)
-    }
-
-    return duplicates
 }
 

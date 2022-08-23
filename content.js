@@ -47,13 +47,11 @@ function setupScannerModeToggleDiv(scannerMode){
 function setupScannerMode(){
     let laptopsInfo = scrapeLaptopsInfo(document)
 
-    let divsWithSerial = $("#serial:not([value|=''])").parent().parent()
-    divsWithSerial.toggle()
+    // toggle other laptop divs except the current batch to scan.
+    let divsWithSerial = $("#serial:not([value|=''])").parent().parent().toggle()
+    let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent().toggle()
 
-    let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
-    divsWithEmptySerialsExceptFirst10.toggle()
-
-    let bullshit = $("form").parent().children().filter(":not(form)")
+    //let bullshit = $("form").parent().children().filter(":not(form)")
     //bullshit.toggle()
 
     setupCheckBtn()
@@ -61,14 +59,16 @@ function setupScannerMode(){
 }
 
 function removeScannerMode(){
-    // toggle other divs except found serialnumber + 10
-    let divsWithSerial = $("#serial:not([value|=''])").parent().parent()
-    divsWithSerial.toggle()
+    // toggle other laptop divs except the current batch to scan.
+    let divsWithSerial = $("#serial:not([value|=''])").parent().parent().toggle()
+    let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent().toggle()
 
-    let divsWithEmptySerialsExceptFirst10 = $("#serial[value|='']:gt(9)").parent().parent()
-    divsWithEmptySerialsExceptFirst10.toggle()
+    // Clear errorization
+    $('[id=serial]').each((idx, elem) => { clearErrorization(elem) })
 
     $("#check_btn").remove()
+
+    $("#save").prop("disabled", true)
 }
 
 function setupCheckBtn(){
@@ -90,11 +90,9 @@ function setupCheckBtn(){
         currentSerials.each((idx, elem) => {
             if(elem.value === '') {
                 success = false
-                elem.style.backgroundColor = "#ff0000"
-                elem.style.color = "#ffffff"
+                errorizeField(elem)
             } else {
-                elem.style.backgroundColor = "#ffffff"
-                elem.style.color = "#000000"
+                clearErrorization(elem)
             }
         })
 
@@ -106,6 +104,16 @@ function setupCheckBtn(){
     })
 
     $("#save").before(checkBtn)
+}
+
+function errorizeField(elem){
+    elem.style.backgroundColor = "#ff0000"
+    elem.style.color = "#ffffff"
+}
+
+function clearErrorization(elem){
+    elem.style.backgroundColor = "#ffffff"
+    elem.style.color = "#000000"
 }
 
 

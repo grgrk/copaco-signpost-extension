@@ -78,32 +78,60 @@ function setupCheckBtn(){
     })
     .css("margin-right","10px")
     .on("click", () => {
-        let currentSerials = $("[id=serial]")
+        var currentSerialBatch = $("[id=serial]")
             .parent().parent()
             .filter((idx, elem) => { return window.getComputedStyle(elem).display !== 'none' })
             .find(".col-sm:lt(1)")
             .find("input")
         
-        console.log(currentSerials)
+        console.log(currentSerialBatch)
 
-        let success = true
-        currentSerials.each((idx, elem) => {
-            if(elem.value === '') {
-                success = false
-                errorizeField(elem)
-            } else {
-                clearErrorization(elem)
-            }
-        })
+        if(checkForEmptySerials(currentSerialBatch)) 
+              $("#save").prop("disabled", false) 
+        else  $("#save").prop("disabled", true)
 
-        if(success){
-            $("#save").prop("disabled", false) 
-        } else {
-            $("#save").prop("disabled", true)
-        }                  
+        if(checkForWrongPrefixes(currentSerialBatch))
+              $("#save").prop("disabled", false) 
+        else  $("#save").prop("disabled", true)
     })
 
     $("#save").before(checkBtn)
+}
+
+function checkForWrongPrefixes(currentSerialBatch){
+    let inputsWithSerial  = $("#serial:not([value|=''])")
+    let allSerialStrings = inputsWithSerial.map((idx, elem) => { return elem.value }).get()
+
+    let prefix = detectPrefix(allSerialStrings)
+
+    let success = true
+    currentSerialBatch.each((idx, elem) => {       
+        if(!elem.value.startsWith(prefix)) { errorizeField(elem); success = false }
+    })
+
+    return success
+}
+
+function checkForEmptySerials(currentSerialBatch){
+    let success = true
+    currentSerialBatch.each((idx, elem) => {
+        if(elem.value === '') { errorizeField(elem); success = false; }
+        else                  { clearErrorization(elem) }
+    })
+
+    return success
+}
+
+function detectPrefix(words){
+    // check border cases size 1 array and empty first word)
+    if (!words[0] || words.length ==  1) return words[0] || "";
+    let i = 0;
+    // while all words have the same character at position i, increment i
+    while(words[0][i] && words.every(w => w[i] === words[0][i]))
+      i++;
+    
+    // prefix is the substring from the beginning to the last successfully checked i
+    return words[0].substr(0, i);
 }
 
 function errorizeField(elem){

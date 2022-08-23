@@ -1,14 +1,19 @@
 console.log("background script hello")
 
+var scannerMode = false
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
+    console.log(msg)
+
     switch(msg.type){
-        case "register_pair":
-            onRegisterPairMsg(msg)
+        case "toggle_scanner_mode":
+            scannerMode = msg.scannerMode
+            console.log(scannerMode)
             break
-        case "new_starting_laptop":
-            console.log(sender)
-            onNewStartingLaptop(msg, sender)
-            break    
+        case "scanner_mode_request":
+            sendResponse({ scannerMode: scannerMode })
+            break
     }
 })
 

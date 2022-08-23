@@ -1,7 +1,6 @@
-#check_button {
-    display: none;
+#scanner_mode {
+    margin-bottom: 15px;
+    font-size: medium;
 }
 
-#checker_log_div {
-    display: none;
-}
+

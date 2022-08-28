@@ -16,6 +16,8 @@ function receiveMessage(msg, sender, sendResponse){
 window.onload = () => {
     markEvery84thLaptop()
 
+    //TODO if scanner mode not active then toggle error div
+
     chrome.runtime.sendMessage({ type: "scanner_mode_request"}, (response) => {
         if(response.scannerMode){ setupScannerMode() }
         setupScannerModeToggleDiv(response.scannerMode)
@@ -26,7 +28,7 @@ function markEvery84thLaptop(){
     let allLaptopDivs = $("[id=serial]").parent().parent()
 
     allLaptopDivs.each((idx, elem) => {
-        if(idx % 84 == 0 && idx != 0) {
+        if(idx % 84 == 0 && idx != 0) { // TODO: this becomes 75
             elem.style.backgroundColor = "#ffff66"
         }
     })

@@ -16,8 +16,6 @@ function receiveMessage(msg, sender, sendResponse){
 window.onload = () => {
     markEvery75thLaptop()
 
-    //TODO if scanner mode not active then toggle error div
-
     chrome.runtime.sendMessage({ type: "scanner_mode_request"}, (response) => {
         if(response.scannerMode){ setupScannerMode() }
         setupScannerModeToggleDiv(response.scannerMode)
@@ -59,7 +57,6 @@ function setupScannerModeToggleDiv(scannerMode){
 }
 
 function setupScannerMode(){
-    let laptopsInfo = scrapeLaptopsInfo(document)
 
     // toggle other laptop divs except the current batch to scan.
     let divsWithSerial = $("#serial:not([value|=''])").parent().parent().toggle()
@@ -87,6 +84,8 @@ function removeScannerMode(){
 
     $("#check_btn").remove()
 
+    $("#error_div").remove()
+
     $("#save").prop("disabled", true)
 }
 
@@ -96,15 +95,23 @@ function setupErrorDiv(){
     $("<span>",{ id: "err_empty" })
         .append("Error: Empty serial numbers detected.")
         .css("color","red").css("display","block")
+        .css("font-size","20px")
         .appendTo(errorDiv).toggle()
     $("<span>",{ id: "err_prefix" })
         .append("Error: Prefixes of serial numbers dont match up.")
         .css("color","red").css("display","block")
+        .css("font-size","20px")
         .appendTo(errorDiv).toggle()
     $("<span>",{ id: "err_duplicate" })
         .append("Error: Duplicate serial numbers found.")
         .css("color","red").css("display","block")
+        .css("font-size","20px")
         .appendTo(errorDiv).toggle()
+    $("<span>",{id: "success"})
+        .append("Everything is fine")
+        .css("color","green")
+        .css("font-size","20px")
+        .appendTo(errorDiv).toggle()   
     
     $("form").append(errorDiv)
 }
@@ -146,6 +153,9 @@ function setupCheckBtn(currentSerialBatch){
         
         if(noEmptySerials && noWrongPrefixes && noDuplicates){
             $("#save").prop("disabled", false) 
+            $("#success").css("display","block")
+        } else {
+            $("#success").css("display","none")
         }
     })
 

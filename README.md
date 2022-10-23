@@ -2,4 +2,5 @@
 
 ## Install guide
 
-1. 
+1. Click on the green Code button
+2. CLick on download ZIP

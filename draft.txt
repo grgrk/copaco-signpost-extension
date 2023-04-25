@@ -1,6 +1,0 @@
-
-//popup.js -----------------------
-duplicates : [["SPB-0036","SPB-0037"], ["SPB-0021","SPB-0023","SPB-0024"]]
-
-//content.js -----------------------
-serialInfo: [{staticSerial: "SPB-0036", modelNumber: "ASUSshittop23"}]

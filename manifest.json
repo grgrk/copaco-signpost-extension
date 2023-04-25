@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "App name",
+    "name": "Copaco Signpost extension",
     "version": "1.0",
     
     "permissions": ["activeTab", "tabs", "alarms", "storage"],

@@ -118,6 +118,7 @@ function getLastLaptopLabel(){
     return laptopsInfo[laptopsInfo.length - 1].signpostLabel
 }
 
+//Order number input field
 document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
     if(key === "Enter") {
         orderNumber = document.getElementById("orderNumber").value
@@ -125,6 +126,7 @@ document.getElementById("orderNumber").addEventListener("keyup", ({key}) => {
 
         url = "".concat("https://productie.signpost.site/imaging.php?id=",orderNumber,"&edit=true")
         
+        //This nested timeout of 10 milliseconds is necessary. The loading animation will not show otherwise. I don't understand why, but this works.
         setTimeout(() => { 
             httpGet(mockUrl, "initialOrderRequest") 
             if(autoUpdate) { stopAutoUpdater() }
@@ -206,6 +208,7 @@ function glueSPBPrefix(trimmedSignpostLabel){
     return "SPB".concat(orderYear,"-",trimmedSignpostLabel)
 }
 
+// Parameter context should be either 'initialOrderRequest' or 'autoUpdateRequest'
 function httpGet(url, context)
 {
     try{
@@ -239,10 +242,12 @@ function handleRequestFail(status){
     disableUserInput()
 }
 
+// Parameter context should be either 'initialOrderRequest' or 'autoUpdateRequest'
 function handleRequestSuccess(responseText, context){
     dom = new DOMParser().parseFromString(responseText, "text/html")
     laptopsInfo = scrapeLaptopsInfo(dom)
 
+    //Only set the startinglaptop to 0 index when the order is first loaded.
     if(context === "initialOrderRequest"){ 
         startingLaptop = laptopsInfo[0].signpostLabel 
         orderYear = detectOrderYear(laptopsInfo[0].signpostLabel)
@@ -277,11 +282,13 @@ function enableUserInput(){
     playBtnActive = true
 }
 
+// This function sets the timeout for autoUpdating. When the timeout is over a new request to fetch updated laptop data is performed.
 function setupTimeout(){
     autoUpdateTimeout = setTimeout(() => {
         if(!autoUpdate) { return }
         showLoadingAnimation()
 
+        //This nested timeout of 10 milliseconds is necessary. The loading animation will not show otherwise. I don't understand why, but this works.
         setTimeout(() => {
             httpGet(mockUrl, "autoUpdateRequest")
         }, 10)
@@ -328,6 +335,7 @@ function setupHTML(){
         )
     }
 
+    // Display error if startinglaptop that was given as input is not found.
     if(!startingLaptopFound){
         document.getElementById('startingLaptop').style.background = "#ff0000"
     } else {

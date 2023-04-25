@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # copaco-signpost-extension
 
 ## Install guide
@@ -91,21 +90,3 @@ The production-v10 branch is the latest production branch and should be used to 
 **popup.html/popup.js** These files are used for the popup where you can open the imaging helper and use the Model version paster feature.
 
 **test files** This folder contains two Signpost order pages which can be used to manually test the application if you have no permission to the signpost order page.
-
-=======
-# copaco-model-version-extension
-
-## Install guide
-
-1. Click on the green Code button.
-2. Click on download ZIP
-3. Go to downloads folder and move the downloaded zip to the Desktop.
-4. unzip it.
-5. open a new chrome tab and type in the url bar: chrome://extensions and hit enter.
-6. turn on developer mode (ontwikkelaarsmodus in dutch).
-7. Click on load unpacked extension (Uitgepakte extensie laden in dutch)
-8. Choose the folder of the unzipped extension
-
-It should now work.
-if it does not work try closing down all chrome tabs and boot it up again.
->>>>>>> 1c62d267370281cbe018ec03cf77c417cdcf3c11
